@@ -87,7 +87,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django_db',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'POST': '3306'
     }
@@ -101,7 +101,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'django_db',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'POST': '3306'
     },
@@ -110,7 +110,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'MyDjango_db',
         'USER': 'root',
-        'PASSWORD': '1234',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'POST': '3306'
     },
@@ -143,6 +143,46 @@ DATABASES = {
 MIDDLEWARE = [
     # 使用中文
     'django.middleware.locale.LocaleMiddleware',
+```
+
+## 编写URL规则
+1. URL(Uniform Resource Locator, 统一资源定位符)
+> URLconf
+2. urls.py
+```python
+# 根目录的urls.py
+from django.contrib import admin
+from django.urls import path, include
+from . import views
+urlpatterns = [
+    # 配置简单URL
+    path('admin/', admin.site.urls),
+    path('', include('index.urls')),
+]
+
+# 上述代码设定了两个URL地址，分别是Admin站点管理和首页地址
+
+# index的urls.py
+from django.urls import path,
+from . import views
+urlpatterns = [
+    # 配置简单URL
+    path('', views.index)
+]
+
+# index的views.py
+from django.shortcuts import render
+from django.http import HttpResponse
+# Create your views here.
+def index(request):
+    return HttpResponse("Hello world")
+```
+
+#### 注：新建数据库
+```
+打开mysql命令对话框
+
+输入 create database 数据库名称 default charset=utf8;
 ```
 
 ## git 远程分支上传
