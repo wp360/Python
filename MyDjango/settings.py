@@ -40,12 +40,21 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # SecurityMiddleware： 内置的安全机制，保护用户与网站的通信安全
     'django.middleware.security.SecurityMiddleware',
+    # SessionMiddleware： 会话Session功能
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # LocaleMiddleware： 使用中文
+    'django.middleware.locale.LocaleMiddleware',
+    # CommonMiddleware： 处理请求信息，规范化请求内容
     'django.middleware.common.CommonMiddleware',
+    # CsrfViewMiddleware： 开启CSRF防护功能
     'django.middleware.csrf.CsrfViewMiddleware',
+    # AuthenticationMiddleware： 开启内置的用户认证系统
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # MessageMiddleware 开启内置的信息提示功能
     'django.contrib.messages.middleware.MessageMiddleware',
+    # XFrameOptionsMiddleware 防止恶意程序点击劫持
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -53,8 +62,10 @@ ROOT_URLCONF = 'MyDjango.urls'
 
 TEMPLATES = [
     {
+        # 定义模板引擎，用于识别模板里面的变量和指令
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 设置模板所在路径
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'index/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,7 +85,26 @@ WSGI_APPLICATION = 'MyDjango.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
+    # 第一个数据库
     'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'POST': '3306'
+    },
+    # 第二个数据库
+    'MyDjango': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MyDjango_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'POST': '3306'
+    },
+    # 第三个数据库
+    'my_sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }

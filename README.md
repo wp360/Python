@@ -63,6 +63,87 @@ http://localhost/static/index_pic.png
 public_static >> public_pic.png
 http://localhost/static/public_pic.png
 ```
+## 数据库配置
+1. 安装
+`pip install mysqlclient`
+> 可能需要更新pip：python -m pip install --upgrade pip
+2. 测试是否安装
+* cmd > python > 交互解释器 > 输入：
+```
+>>> import MySQLdb
+>>> MySQLdb.__version__
+'1.3.12'
+```
+3. 配置MySQL数据库连接信息
+```python
+# settings.py
+# Database
+# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'POST': '3306'
+    }
+}
+```
+4. 多个数据库设置
+```python
+DATABASES = {
+    # 第一个数据库
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'POST': '3306'
+    },
+    # 第二个数据库
+    'MyDjango': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MyDjango_db',
+        'USER': 'root',
+        'PASSWORD': '1234',
+        'HOST': '127.0.0.1',
+        'POST': '3306'
+    },
+    # 第三个数据库
+    'my_sqlite3': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+
+#### 注意：
+1. 版本低
+```
+安装mysqlclient可能会出现版本过低报错，需要对源码进行修改，在Python的安装目录下找到base
+（C:\Users\用户名\AppData\Local\Programs\Python\Python36-32\Lib\site-packages\django\db\backends\mysql\base.py）
+```
+```python
+# 注释掉这两句
+# if version < (1, 3, 13):
+#     raise ImproperlyConfigured('mysqlclient 1.3.13 or newer is required; you have %s.' % Database.__version__)
+```
+2. mysqlclient 提示Microsoft Visual C++ 14.0 is required问题
+> 解决办法： 离线安装
+`pip install mysqlclient-1.4.2-cp36-cp36m-win32.whl`
+[参考：https://blog.csdn.net/moshowgame/article/details/82013080](https://blog.csdn.net/moshowgame/article/details/82013080)
+
+## 中间件
+```python
+MIDDLEWARE = [
+    # 使用中文
+    'django.middleware.locale.LocaleMiddleware',
+```
 
 ## git 远程分支上传
 ```
