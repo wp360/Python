@@ -137,7 +137,86 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 ```
+* [添加菜单列表视图层]
+```python
+# views.py
+from django.shortcuts import render
+from .models import Meals
+# Create your views here.
 
+def meal_list(request):
+  pass
+
+def meal_detail(request, slug):
+  pass
+
+# 新建urls.py文件（meals文件夹下）
+# urls.py
+from django.urls import path
+from . import views
+
+app_name = 'meals'
+
+urlpatterns = [
+    path('', views.meal_list, name='meal_list'),
+    path('<slug:slug>', views.meal_detail, name='meal_detail')
+]
+
+# project文件夹下urls.py
+from django.urls import path, include
+# 省略
+
+urlpatterns = [
+    # 省略
+    path('meals/', include('meals.urls', namespace='meals')),
+]
+
+```
+* [views.py新增列表页]
+```python
+from django.shortcuts import render
+from .models import Meals
+# Create your views here.
+
+def meal_list(request):
+  meal_list = Meals.objects.all()
+  context = {'meal_list': meal_list}
+  return render(request, 'Meals/list.html', context)
+
+def meal_detail(request, slug):
+  pass
+```
+> meals >> templates >> Meals >> list.html/detail.html
+```html
+<!-- list.html -->
+<h1>美食列表</h1>
+{%  for meal in meal_list %}
+  <h2>
+    <a href="{% url 'meals: meal_detail' meal.slug %}">{{meal}}</a>
+  </h2>
+{% endfor %}
+```
+#### 注意：如果slug为空，会报错。所以后台添加信息时要生成slug。
+```python
+# views.py
+# 省略
+
+def meal_detail(request, slug):
+  meal_detail = Meals.objects.get(slug=slug)
+  context = {'meal_detail': meal_detail}
+  return render(request, 'Meals/detail.html', context)
+
+```
+```html
+<!-- detail.html -->
+<h1>美食详情页</h1>
+<h2>{{meal_detail}}</h2>
+<p>{{meal_detail.description}}</p>
+<p>{{meal_detail.people}}</p>
+<p>{{meal_detail.price}}</p>
+<p>{{meal_detail.preperation_time}}</p>
+<img src="{{meal_detail.image.url}}" alt="">
+```
 ## git 远程分支上传
 ```
 git remote add origin https://github.com/wp360/Python.git
