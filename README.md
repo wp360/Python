@@ -184,6 +184,61 @@ def index(request):
 
 输入 create database 数据库名称 default charset=utf8;
 ```
+## 探究视图
+1. 构建网页内容
+```python
+# urls.py代码
+path('download.html', views.download)
+# views.py代码
+import csv
+# Create your views here.
+
+def download(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['First row', 'A', 'B', 'C'])
+    return response
+```
+> 输入网址：http://127.0.0.1/download.html 》文件下载
+
+2. render()语法
+```
+render(request,template_name,context=None,content_type=None,status=None,using=None)
+```
+3. 创建数据表
+```
+# 根据models.py生成相关的.py文件，该文件用于创建数据表
+》python manage.py makemigrations
+Migrations for 'index': index\migrations\0001_initial.py - Create model product
+# 创建数据表
+》python manage.py migrate
+```
+#### 备注：关于python manage.py migrate后报错
+```
+raise MigrationSchemaMissing("Unable to create the django_migrations table (%s)" % exc)
+django.db.migrations.exceptions.MigrationSchemaMissing: Unable to create the django_migrations table ((1064, "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(6) NOT NULL)' at line 1"))
+
+## 原因：
+Django2.1不再支持MySQL5.5，必须5.6版本以上
+
+解决办法：
+
+二选一
+（1）Django降级到2.0
+`pip install Django==2.0.0 -i https://pypi.douban.com/simple`
+（2）MySQL升级
+
+## Django使用MySQL数据库
+http://yshblog.com/blog/194
+
+CREATE DATABASE django_db DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
+
+CREATE USER 'myDjango'@'localhost' IDENTIFIED BY 'django2019';
+
+GRANT ALL PRIVILEGES ON django_db.* TO 'myDjango'@'localhost';
+```
+
 
 ## git 远程分支上传
 ```

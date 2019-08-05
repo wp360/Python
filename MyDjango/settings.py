@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'index',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -85,28 +87,16 @@ WSGI_APPLICATION = 'MyDjango.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 第一个数据库
+    # 数据库
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django_db',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'POST': '3306'
-    },
-    # 第二个数据库
-    'MyDjango': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MyDjango_db',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '127.0.0.1',
-        'POST': '3306'
-    },
-    # 第三个数据库
-    'my_sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'django_db',
+        # 'USER': 'myDjango',
+        # 'PASSWORD': 'django2019',
+        # 'HOST': '127.0.0.1',
+        # 'POST': '3306'
     }
 }
 
@@ -150,6 +140,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # 设置根目录的静态资源文件夹public_static
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'public_static'),
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'public_static'),
 # 设置APP(index) 的静态资源文件夹index_static
-os.path.join(BASE_DIR, 'index/index_static')]
+# os.path.join(BASE_DIR, 'index/index_static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
