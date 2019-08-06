@@ -238,7 +238,8 @@ CREATE USER 'myDjango'@'localhost' IDENTIFIED BY 'django2019';
 
 GRANT ALL PRIVILEGES ON django_db.* TO 'myDjango'@'localhost';
 ```
-
+## 探究模板
+1. 变量与标签
 
 ## git 远程分支上传
 ```

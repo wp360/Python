@@ -14,18 +14,18 @@ def download(request):
     writer.writerow(['First row', 'A', 'B', 'C'])
     return response
 
-def index(request):
-    type_list = Product.objects.values('type').distinct()
-    name_list = Product.objects.values('name','type')
-    context = {'title': '首页', 'type_list': type_list, 'name_list': name_list}
-    return render(request, 'index.html',context=context, status=200)
-
-# locals()使用技巧
 # def index(request):
 #     type_list = Product.objects.values('type').distinct()
 #     name_list = Product.objects.values('name','type')
-#     title = '首页'
-#     return render(request, 'index.html',context=locals(), status=200)
+#     context = {'title': '首页', 'type_list': type_list, 'name_list': name_list}
+#     return render(request, 'index.html',context=context, status=200)
+
+# locals()使用技巧
+def index(request):
+    type_list = Product.objects.values('type').distinct()
+    name_list = Product.objects.values('name','type')
+    title = '首页'
+    return render(request, 'index.html',context=locals(), status=200)
 
 def login(request):
     if request.method == 'POST':
