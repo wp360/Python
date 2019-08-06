@@ -217,6 +217,10 @@ def meal_detail(request, slug):
 <p>{{meal_detail.preperation_time}}</p>
 <img src="{{meal_detail.image.url}}" alt="">
 ```
+## 添加模板
+1. 搜索免费模板
+[https://colorlib.com/wp/templates/](https://colorlib.com/wp/templates/)
+
 ## git 远程分支上传
 ```
 git remote add origin https://github.com/wp360/Python.git
