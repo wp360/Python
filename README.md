@@ -240,6 +240,34 @@ GRANT ALL PRIVILEGES ON django_db.* TO 'myDjango'@'localhost';
 ```
 ## 探究模板
 1. 变量与标签
+2. 模板继承
+3. 自定义过滤器
+* 新建文件夹user_defined 》__init__.py
+* user_defined下新建文件夹 templatetags 》__init__.py、myfilter.py
+```python
+# myfilter.py
+from django import template
+# 注册过滤器
+register = template.Library()
+# 声明并定义过滤器
+@register.filter
+def myreplace(value, agrs):
+    oldValue = agrs.split(':')[0]
+    newValue = agrs.split(':')[1]
+    return value.replace(oldValue, newValue)
+```
+```html
+<!-- html里加载使用模板过滤器 -->
+{% load myfilter %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title|myreplace:'首页:我的首页' }}</title>
+
+<!-- myreplace是过滤器的函数名
+'首页:我的首页'是函数参数agrs的值
+函数参数value的值为模板变量title的值 -->
+```
 
 ## git 远程分支上传
 ```
