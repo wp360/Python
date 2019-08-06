@@ -268,6 +268,51 @@ def myreplace(value, agrs):
 '首页:我的首页'是函数参数agrs的值
 函数参数value的值为模板变量title的值 -->
 ```
+## 模型与数据库
+1. ORM框架
+2. Django外键（ForeignKey）
+[参考Django外键（ForeignKey）操作以及related_name的作用](https://blog.csdn.net/hpu_yly_bj/article/details/78939748)
+3. 新建数据库
+```
+mysql -u root -p
+
+CREATE DATABASE mydjango DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
+
+GRANT ALL PRIVILEGES ON mydjango.* TO 'myDjango'@'localhost';
+
+python manage.py makemigrations
+
+python manage.py migrate
+```
+4. 数据表的关系
+```python
+# 多对多
+class Performer(models.Model):
+    id = models.InterField(primary_key=True)
+    name = models.CharField(max_length=20)
+    nationality = models.CharField(max_length=20)
+class Program(models.Model):
+    id = models.InterField(primary_key=True)
+    name = models.CharField(max_length=20)
+    performer = models.ManyToManyField(Performer)
+
+# 更新数据
+# 单条数据
+Product.objects.get(id=9).update(name='华为荣耀V9')
+# 多条数据
+Product.objects.filter(name='荣耀V9').update(name='华为荣耀V9')
+# 全表数据
+Product.objects.update(name='华为荣耀V9')
+
+# 删除数据
+# 单条删除
+Product.objects.get(id=1).delete()
+# 多条删除
+Product.objects.filter(name='华为荣耀V9').delete()
+# 全表删除
+Product.objects.all().delete()
+```
+5. 多表查询
 
 ## git 远程分支上传
 ```
