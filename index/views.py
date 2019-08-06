@@ -4,6 +4,7 @@ import csv
 # 页面渲染
 from django.shortcuts import render,redirect
 from .models import Product
+from .form import *
 
 # Create your views here.
 
@@ -26,6 +27,9 @@ def index(request):
     name_list = Product.objects.values('name','type')
     title = '首页'
     return render(request, 'index.html',context=locals(), status=200)
+    # 表单
+    product = ProductForm()
+    return render(request, 'data_form.html',locals())
 
 def login(request):
     if request.method == 'POST':

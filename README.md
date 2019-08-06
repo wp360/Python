@@ -314,6 +314,13 @@ Product.objects.all().delete()
 ```
 5. 多表查询
 
+## 表单
+```
+# {% csrf_token %}
+1、不推荐禁用掉django中的CSRF。
+2、我们可以再html页面的form表单中添加csrf_token，带着表单的请求一起发送到服务器去验证。
+```
+
 ## git 远程分支上传
 ```
 git remote add origin https://github.com/wp360/Python.git
