@@ -320,6 +320,57 @@ Product.objects.all().delete()
 1、不推荐禁用掉django中的CSRF。
 2、我们可以再html页面的form表单中添加csrf_token，带着表单的请求一起发送到服务器去验证。
 ```
+## Admin后台系统
+1. 新建用户密码
+```
+D:\MyDjango>python manage.py createsuperuser
+Username (leave blank to use 'oldkids001'): root
+Email address: ******
+Password:
+Password (again):
+The password is too similar to the username.
+This password is too short. It must contain at least 8 characters.
+This password is too common.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+
+```
+2. 打开数据表auth_user查看
+3. index定义的模型展示在Admin后台系统中
+```python
+# admin.py
+from django.contrib import admin
+from .models import *
+# Register your models here.
+
+# 方法一
+# 将模型直接注册到admin后台
+admin.site.register(Product)
+
+# 方法二
+# 自定义ProductAdmin类并继承ModelAdmin
+# 注册方法一，使用Python装饰器将ProductAdmin和模型Product绑定注册到后台
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    # 设置显示的字段
+    list_display = ['id', 'name', 'weight', 'size', 'type',]
+# 注册方法二
+# admin.site.register(Product, ProductAdmin)
+```
+#### 注册报错
+> django.contrib.admin.sites.AlreadyRegistered: The model Product is already registered
+```python
+# 解决办法：先注销
+admin.site.unregister(Product)
+# 还是不行
+# 直接注释掉 admin.site.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    # 设置显示的字段
+    list_display = ['id', 'name', 'weight', 'size', 'type',]
+# 注册方法二
+admin.site.register(Product, ProductAdmin)
+# 这样就OK了
+```
 
 ## git 远程分支上传
 ```
