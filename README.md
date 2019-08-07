@@ -221,6 +221,33 @@ def meal_detail(request, slug):
 1. 搜索免费模板
 [https://colorlib.com/wp/templates/](https://colorlib.com/wp/templates/)
 
+2. Django项目配置/static/路径，调用css、img、js等静态文件
+```
+例如：
+<link rel="stylesheet" href="/css/bootstrap.css">
+改成：
+<link rel="stylesheet" href="{% static 'site_static/css/bootstrap.css' %}">
+```
+3. 删除多余内容
+4. 循环遍历数据
+```html
+{% for meal in meal_list %}
+  <div class="d-block d-md-flex menu-food-item">
+    <div class="text order-1 mb-3">
+      <h3><a href="#">{{meal.name}}</a></h3>
+      <p>{{meal.description}}</p>
+    </div>
+    <div class="price order-2">
+      <strong>${{meal.price}}</strong>
+    </div>
+  </div> <!-- .menu-food-item -->
+{% endfor %}
+```
+5. Django 模板.html中 href参数传入
+```html
+<a href="{% url 'meals:meal_detail' meal.slug %}">{{meal.name}}</a>
+```
+
 ## git 远程分支上传
 ```
 git remote add origin https://github.com/wp360/Python.git
