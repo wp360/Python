@@ -34,6 +34,10 @@ class Product(models.Model):
     # 设置返回值
     def __str__(self):
         return self.name
+    class Meta:
+        # 如只设置verbose_name，在Admin会显示为“产品信息s”
+        verbose_name = '产品信息'
+        verbose_name_plural = '产品信息'
 # from django.db import models
 
 # # Create your models here.

@@ -371,6 +371,75 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 # 这样就OK了
 ```
+4. Admin的基本设置
+```python
+# __init__.py
+# INDEX设置中文，代码编写在App(index)的__init__.py文件中
+from django.apps import AppConfig
+import os
+# 修改app在admin后台显示名称
+# default_app_config的值来自apps.py的类名
+default_app_config = 'index.IndexConfig'
+
+# 获取当前app的命名
+def get_current_app_name(_file):
+    return os.path.split(os.path.dirname(_file))[-1]
+
+# 重写类IndexConfig
+class IndexConfig(AppConfig):
+    name = get_current_app_name(__file__)
+    verbose_name = '网站首页'
+
+# Products设置中文，代码编写在models.py文件中
+# 设置字段中文名，用于admin后台显示
+class Product(models.Model):
+    id = models.AutoField('序号', primary_key=True)
+    name = models.CharField('名称',max_length=50)
+    weight = models.CharField('重量',max_length=20)
+    size = models.CharField('尺寸',max_length=20)
+    type = models.ForeignKey(Type, on_delete=models.CASCADE,verbose_name='产品类型')
+    # 设置返回值
+    def __str__(self):
+        return self.name
+    class Meta:
+        # 如只设置verbose_name，在Admin会显示为“产品信息s”
+        verbose_name = '产品信息'
+        verbose_name_plural = '产品信息'
+
+# admin.py
+# 进一步完善Admin网页标题信息
+# 修改title和header
+admin.site.site_title = 'MyDjango后台管理'
+admin.site.site_header = 'MyDjango'
+
+# models.py
+# 设置字段中文名，用于admin后台显示
+class Type(models.Model):
+    id = models.AutoField('序号', primary_key=True)
+    type_name = models.CharField('产品类型', max_length=20)
+    # 设置返回值
+    def __str__(self):
+        return self.type_name
+```
+5. 优化ProductAdmin
+```python
+# admin.py
+class ProductAdmin(admin.ModelAdmin):
+    # 设置显示的字段
+    list_display = ['id', 'name', 'weight', 'size', 'type',]
+    # 设置搜索字段，如有外键应使用双下划线连接两个模型的字段
+    search_fields = ['id', 'name','type__type_name']
+    # 设置过滤器，如有外键应使用双下划线连接两个模型的字段
+    list_filter = ['name','type__type_name']
+    # 设置排序方式，['id']为升序，降序为['-id']
+    ordering = ['id']
+    # 设置时间选择器，如字段中有时间格式才可以使用
+    # date_hierarchy = Field
+    # 在添加新数据时，设置可添加数据的字段
+    fields = ['name', 'weight', 'size', 'type']
+    # 设置可读字段,在修改或新增数据时使其无法设置
+    readonly_fields = ['name']
+```
 
 ## git 远程分支上传
 ```
