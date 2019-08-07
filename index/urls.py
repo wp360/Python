@@ -5,6 +5,8 @@ urlpatterns = [
     path('', views.index),
     path('download.html', views.download),
     path('login.html', views.login),
+    # 数据库表单
+    path('<int:id>.html', views.model_index),
     # 通用视图
     # path('index/', views.ProductList.as_view()),
     path('index/<id>.html', views.ProductList.as_view(),{'name':'phone'}),
