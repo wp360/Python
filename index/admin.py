@@ -29,5 +29,47 @@ class ProductAdmin(admin.ModelAdmin):
     fields = ['name', 'weight', 'size', 'type']
     # 设置可读字段,在修改或新增数据时使其无法设置
     readonly_fields = ['name']
+    # 重写get_readonly_fields函数，设置超级用户和普通用户的权限
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            self.readonly_fields = []
+        else:
+            self.readonly_fields = ['name']
+        return self.readonly_fields
+    # 添加自定义字段，在属性list_display添加自定义字段colored_type，colored_type来自模型Porduct
+    list_display.append('colored_type')
+
+    # 根据当前用户名设置数据访问权限
+    def get_queryset(self, request):
+        qs = super(ProductAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            return qs.filter(id__lt=6)
+    
+    # 新增或修改数据时，设置外键可选值
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'type':
+            if not request.user.is_superuser:
+                kwargs["queryset"] = Type.objects.filter(id__lt=4)
+        return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    # 修改保存方法
+    def save_model(self, request, obj, form, change):
+        if change:
+            # 获取当前用户名
+            user = request.user
+            # 使用模型获取修改数据
+            name = self.model.objects.get(pk=obj.pk).name
+            # 使用表单获取修改数据
+            weight = form.cleaned_data['weight']
+            # 写入日志文件
+            f = open('e://MyDjango_log.txt', 'a')
+            f.write('产品：'+str(name)+'，被用户：'+str(user)+'修改'+'\r\n')
+            f.close()
+        else:
+            pass
+        # 使用super可使自定义save_model既保留父类的已有的功能并添加自定义功能。
+        super(ProductAdmin, self).save_model(request, obj, form, change)
 # 注册方法二
 admin.site.register(Product, ProductAdmin)

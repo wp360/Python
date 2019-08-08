@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.html import format_html
 # Create your models here.
 # 创建产品分类表
 # class Type(models.Model):
@@ -45,3 +46,21 @@ class Product(models.Model):
 #     id = models.IntegerField(primary_key=True)
 #     name = models.CharField(max_length=50)
 #     type = models.CharField(max_length=20)
+
+    # 自定义函数，设置字体颜色
+    def colored_type(self):
+        if '手机' in self.type.type_name:
+            color_code = 'red'
+        elif '平板电脑' in self.type.type_name:
+            color_code = 'blue'
+        elif '智能穿戴' in self.type.type_name:
+            color_code = 'green'
+        else:
+            color_code = 'yellow'
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            color_code,
+            self.type,
+        )
+    # 设置admin的标题
+    colored_type.short_description = '带颜色的产品类型'

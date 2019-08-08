@@ -440,6 +440,132 @@ class ProductAdmin(admin.ModelAdmin):
     # 设置可读字段,在修改或新增数据时使其无法设置
     readonly_fields = ['name']
 ```
+## Admin的二次开发
+1. 通过重写ModelAdmin的方法可以实现Admin的二次开发
+```python
+# 重写get_readonly_fields函数，设置超级用户和普通用户的权限
+def get_readonly_fields(self, request, obj=None):
+    if request.user.is_superuser:
+        self.readonly_fields = []
+    else:
+        self.readonly_fields = ['name']
+    return self.readonly_fields
+```
+2. 设置字段格式
+```python
+# models.py的模型Product
+from django.utils.html import format_html
+class Product(models.Model):
+    id = models.AutoField('序号', primary_key=True)
+    name = models.CharField('名称',max_length=50)
+    weight = models.CharField('重量',max_length=20)
+    size = models.CharField('尺寸',max_length=20)
+    type = models.ForeignKey(Type, on_delete=models.CASCADE,verbose_name='产品类型')
+    # 设置返回值
+    def __str__(self):
+        return self.name
+    class Meta:
+        # 如只设置verbose_name，在Admin会显示为“产品信息s”
+        verbose_name = '产品信息'
+        verbose_name_plural = '产品信息'
+    # 自定义函数，设置字体颜色
+    def colored_type(self):
+        if '手机' in self.type.type_name:
+            color_code = 'red'
+        elif '平板电脑' in self.type.type_name:
+            color_code = 'blue'
+        elif '智能穿戴' in self.type.type_name:
+            color_code = 'green'
+        else:
+            color_code = 'yellow'
+        return format_html(
+            '<span style="color: {};">{}</span>',
+            color_code,
+            self.type,
+        )
+    # 设置admin的标题
+    colored_type.short_description = '带颜色的产品类型'
+
+# 在admin.py的ProductAdmin中添加自定义字段
+# 添加自定义字段，在属性list_display添加自定义字段colored_type，colored_type来自模型Porduct
+list_display.append('colored_type')
+```
+3. 函数get_queryset
+> 根据不同用户角色设置数据的访问权限，可以将一些重要的数据进行过滤。
+```python
+# admin.py
+# 根据当前用户名设置数据访问权限
+def get_queryset(self, request):
+    qs = super(ProductAdmin, self).get_queryset(request)
+    if request.user.is_superuser:
+        return qs
+    else:
+        return qs.filter(id__lt=6)
+```
+
+4. 函数formfield_for_foreignkey
+> 用于在新增或修改数据的时候，设置外键的可选值。
+```python
+# admin.py
+# 新增或修改数据时，设置外键可选值
+def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    if db_field.name == 'type':
+        if not request.user.is_superuser:
+            kwargs["queryset"] = Type.objects.filter(id__lt=4)
+    return super(admin.ModelAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+```
+5. 函数save_model
+```python
+# admin.py
+# 修改保存方法
+def save_model(self, request, obj, form, change):
+    if change:
+        # 获取当前用户名
+        user = request.user
+        # 使用模型获取修改数据,pk代表具有主键属性的字段
+        name = self.model.objects.get(pk=obj.pk).name
+        # 使用表单获取修改数据
+        weight = form.cleaned_data['weight']
+        # 写入日志文件
+        f = open('D://MyDjango_log.txt', 'a')
+        f.write('产品：'+str(name)+'，被用户：'+str(user)+'修改'+'\r\n')
+        f.close()
+    else:
+        pass
+    # 使用super可使自定义save_model既保留父类的已有的功能并添加自定义功能。
+    super(ProductAdmin, self).save_model(request, obj, form, change)
+```
+6. 函数delete_model
+```python
+def delete_model(self, request, obj):
+    pass
+    super(ProductAdmin, self).delete_model(request, obj)
+```
+7. 自定义模板
+* 修改Admin模板所在路径
+> cmd 输入命令pip show django即可
+(\Lib\site-pageages\django\contrib\admin\templates\admin)
+> 直接修改方法不提倡，推荐利用模板继承的方法实现自定义模板开发。
+* 在项目中创建模板文件夹templates，在templates下依次创建文件夹admin和index
+templates 》 admin 》 index 》 change_form.html
+```html
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static admin_modify %}
+{% block object-tools-items %}
+    {# 判断当前用户角色 #}
+    {% if request.user.is_superuser %}
+        <li>
+            {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+            <a href="{% add_preserved_filters history_url %}" class="historylink">{% trans "History" %}</a>
+        </li>
+    {# 判断结束符 #}
+    {% endif %}
+    {% if has_absolute_url %}
+        <li><a href="{{ absolute_url }}" class="viewsitelink">{% trans "View on site" %}</a></li>
+    {% endif %}
+{% endblock %}
+```
 
 ## git 远程分支上传
 ```
@@ -456,4 +582,5 @@ git commit -m "add file"
 git push
 
 git push --set-upstream origin myDjango
+
 ```
