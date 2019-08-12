@@ -462,6 +462,31 @@ class Category(models.Model):
 </div>
 
 ```
+## Django页面生成步骤
+1. 新建app
+`python manage.py startapp reservation`
+2. 新建模板
+reservation 》template 》Reservation 》reservation.html
+3. 建立数据库模型
+```python
+# models.py
+```
+4. settings.py添加reservation
+5. admin.py绑定模型
+6. 更新数据库
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+7. 视图更新
+```python
+# views.py
+```
+8. 页面更新
+```html
+<!-- reservation.html -->
+```
 
 ## Django常见错误总结: 细数我们一起走过的大坑
 [https://blog.csdn.net/weixin_42134789/article/details/82184481](https://blog.csdn.net/weixin_42134789/article/details/82184481)
