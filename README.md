@@ -247,6 +247,224 @@ def meal_detail(request, slug):
 ```html
 <a href="{% url 'meals:meal_detail' meal.slug %}">{{meal.name}}</a>
 ```
+## Category模型
+1. 添加Category模型
+```python
+# models.py
+category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
+
+class Category(models.Model):
+  name = models.CharField(max_length=30)
+
+  def __str__(self):
+    return self.name
+# python manage.py makemigrations
+# python manage.py migrate
+# python manage.py runserver
+```
+2. 后台添加参数
+```python
+from django.contrib import admin
+
+# Register your models here.
+
+from .models import Meals, Category
+
+admin.site.register(Meals)
+admin.site.register(Category)
+
+```
+3. 关于django 2.x版本中models.ForeignKey() 外键说明
+```
+ForeignKey 表示设置外健
+on_delete有CASCADE、PROTECT、SET_NULL、SET_DEFAULT、SET()五个可选择的值
+CASCADE：此值设置，是级联删除。
+PROTECT：此值设置，是会报完整性错误。
+SET_NULL：此值设置，会把外键设置为null，前提是允许为null。
+SET_DEFAULT：此值设置，会把设置为外键的默认值。
+SET()：此值设置，会调用外面的值，可以是一个函数。
+一般情况下使用CASCADE就可以了。
+
+null=True
+null 是针对数据库而言，如果 null=True, 表示数据库的该字段可以为空，即在Null字段显示为yes。
+```
+4. 添加分类，调整视图
+```python
+# meals/views.py
+# 省略
+from .models import Meals, Category
+# 省略
+
+def meal_list(request):
+# 省略
+  categories = Category.objects.all()
+
+  context = {
+# 省略
+    'categories': categories
+  }
+# 省略
+
+# meals/models.py
+class Category(models.Model):
+    # 省略
+
+    class Meta:
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
+
+    # 省略
+```
+```html
+<!-- list.html分类切换修改 -->
+<ul class="nav site-tab-nav" id="pills-tab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="pills-breakfast-tab" data-toggle="pill" href="#pills-breakfast" role="tab" aria-controls="pills-breakfast" aria-selected="true">Breakfast</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-lunch-tab" data-toggle="pill" href="#pills-lunch" role="tab" aria-controls="pills-lunch" aria-selected="false">Brunch</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="pills-dinner-tab" data-toggle="pill" href="#pills-dinner" role="tab" aria-controls="pills-dinner" aria-selected="false">Dinner</a>
+  </li>
+</ul>
+<!-- 改成 -->
+<ul class="nav site-tab-nav" id="pills-tab" role="tablist">
+  {% for category in categories %}
+  <li class="nav-item">
+    <a class="nav-link " id="{{category}}-tab" data-toggle="pill" href="#{{category}}" role="tab"
+      aria-controls="{{category}}" aria-selected="true">{{category}}</a>
+  </li>
+  {% endfor %}
+</ul>
+<!-- 内容部分 -->
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="pills-breakfast" role="tabpanel" aria-labelledby="pills-breakfast-tab">
+    {% for meal in meal_list %}
+      <div class="d-block d-md-flex menu-food-item">
+        <div class="text order-1 mb-3">
+          <h3><a href="{% url 'meals:meal_detail' meal.slug %}">{{meal.name}}</a></h3>
+          <p>{{meal.description}}</p>
+        </div>
+        <div class="price order-2">
+          <strong>${{meal.price}}</strong>
+        </div>
+      </div> <!-- .menu-food-item -->
+    {% endfor %}
+  </div>
+  <div class="tab-pane fade" id="pills-lunch" role="tabpanel" aria-labelledby="pills-lunch-tab">
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Jumbo Lump Crab Stack</a></h3>
+        <p>Spinach and artichokes in a creamy cheese dip with warm tortilla chips &amp; salsa.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$12.49</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Jamaican Chicken Wings</a></h3>
+        <p>Crisp tortilla and plantain chips covered with lightly spiced ground beef, melted cheese, pickled jalapeños, guacamole, sour cream and salsa.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$15.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Bahamian Seafood Chowder</a></h3>
+        <p>A heaping mountain of rings, handmade with Panko breading and shredded coconut flakes.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$10.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Grilled Chicken &amp; Tropical Fruit on Mixed Greens</a></h3>
+        <p>Lobster and tender shrimp, with onions, sweet peppers, spinach and our three cheese blend. Griddled and served with tomato salsa and sour cream.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$12.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+  </div>
+  <div class="tab-pane fade" id="pills-dinner" role="tabpanel" aria-labelledby="pills-dinner-tab">
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Grilled Top Sirlion Steak</a></h3>
+        <p>Spinach and artichokes in a creamy cheese dip with warm tortilla chips &amp; salsa.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$18.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Steak Oscar</a></h3>
+        <p>Crisp tortilla and plantain chips covered with lightly spiced ground beef, melted cheese, pickled jalapeños, guacamole, sour cream and salsa.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$23.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Skirt Steak Churrasco</a></h3>
+        <p>A heaping mountain of rings, handmade with Panko breading and shredded coconut flakes.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$20.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+    <div class="d-block d-md-flex menu-food-item">
+      <div class="text order-1 mb-3">
+        <h3><a href="#">Grilled Beef Steak</a></h3>
+        <p>Lobster and tender shrimp, with onions, sweet peppers, spinach and our three cheese blend. Griddled and served with tomato salsa and sour cream.</p>
+      </div>
+      <div class="price order-2">
+        <strong>$20.99</strong>
+      </div>
+    </div> <!-- .menu-food-item -->
+
+  </div>
+</div>
+<!-- 改成 -->
+<div class="tab-content" id="pills-tabContent">
+  {% for category in categories %}
+  <div class="tab-pane fade show" id="{{category}}" role="tabpanel"
+    aria-labelledby="{{category}}-tab">
+    {% for meal in meal_list %}
+      {% if meal.category == category %}
+        <div class="d-block d-md-flex menu-food-item">
+          <div class="text order-1 mb-3">
+            <h3><a href="{% url 'meals:meal_detail' meal.slug %}">{{meal.name}}</a></h3>
+            <p>{{meal.description}}</p>
+          </div>
+          <div class="price order-2">
+            <strong>${{meal.price}}</strong>
+          </div>
+        </div> <!-- .menu-food-item -->
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+```
+
+## Django常见错误总结: 细数我们一起走过的大坑
+[https://blog.csdn.net/weixin_42134789/article/details/82184481](https://blog.csdn.net/weixin_42134789/article/details/82184481)
 
 ## git 远程分支上传
 ```
