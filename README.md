@@ -566,6 +566,51 @@ templates 》 admin 》 index 》 change_form.html
     {% endif %}
 {% endblock %}
 ```
+## Auth认证系统
+1. 内置User实现用户管理
+* 创建新的APP，命名为user，并且在项目的settings.py和urls.py中配置APP的信息
+```python
+# settings.py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'index',
+    'user',
+]
+
+# 文件夹MyDjango的urls.py的URL地址配置
+from django.contrib import admin
+from django.urls import path,include
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',include('index.urls')),
+    path('user/', include('user.urls'))
+]
+
+# user文件夹新建urls.py、templates文件夹添加user.html
+# urls.py文件
+# 设置URL地址信息
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('login.html', views.loginView, name='login'),
+    path('register.html', views.registerView, name='register'),
+    path('setpassword.html', views.setpasswordView, name='setpassword'),
+    path('logout.html', views.logoutView, name='logout'),
+]
+# 上述URL地址分别对应视图函数loginView、registerView、setpasswordView和logoutView
+# 参数name用来设置URL的命名，可直接在HTML模板上使用并生成相应的URL地址。
+```
+* user.html代码结构
+* 用户登录、注册和修改密码界面
+* views.py添加用户登录注册、密码修改及注销等内容
+* make_password和check_password的使用
+
 
 ## git 远程分支上传
 ```
