@@ -482,11 +482,80 @@ python manage.py runserver
 7. 视图更新
 ```python
 # views.py
+from .models import Reservation
+from django.shortcuts import render
+
+from reservation.models import Reservation
+
+# Create your views here.
+def reserve_table(request):
+  context = {}
+  return render(request, 'Reservation/reservation.html', context)
+
 ```
-8. 页面更新
+8. 新建urls.py路由
+```python
+# urls.py
+from django.urls import path
+from . import views
+
+app_name = 'reservation'
+
+urlpatterns = [
+    path('', views.reserve_table, name='reserve_table')
+]
+
+```
+9. 项目总urls.py路由添加
+```python
+# project >> urls.py
+urlpatterns = [
+    # 省略
+    path('reserve_table/', include('reservation.urls', namespace='reservation')),
+]
+```
+10. 表单
+```python
+# form.py
+from django import forms
+from .models import Reservation
+
+
+class ReserveTableForm(forms.ModelForm):
+  class Meta:
+    model = Reservation
+    fields = '__all__'
+
+```
+11. 页面制作
 ```html
 <!-- reservation.html -->
+
 ```
+12. 页面视图
+```python
+# views.py
+# 省略
+# Create your views here.
+def reserve_table(request):
+  reserve_form = ReserveTableForm()
+  if request.method == 'POST':
+    reserve_form = ReserveTableForm(request.POST)
+    if reserve_form.is_valid():
+      reserve_form.save()
+
+  context = {'form': reserve_form}
+  return render(request, 'Reservation/reservation.html', context)
+
+```
+13. 更新原始html导航
+```html
+<!-- base.html -->
+<li><a href="reservation.html">Reserve A Table</a></li>
+<!-- 改成 -->
+<li><a href="{% url 'reservation:reserve_table' %}">Reserve A Table</a></li>
+```
+
 
 ## Django常见错误总结: 细数我们一起走过的大坑
 [https://blog.csdn.net/weixin_42134789/article/details/82184481](https://blog.csdn.net/weixin_42134789/article/details/82184481)
