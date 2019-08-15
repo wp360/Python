@@ -611,6 +611,88 @@ urlpatterns = [
 * views.py添加用户登录注册、密码修改及注销等内容
 * make_password和check_password的使用
 
+## 发送邮件实现密码找回
+1. settings.py设置
+```python
+# 邮件配置信息
+# EMAIL_USE_SSL 设置Django与邮件服务器的连接方式为SSL
+EMAIL_USE_SSL = True
+# 邮件服务器，如果是 163 改成 smtp.163.com
+# EMAIL_HOST 设置服务器地址，该配置使用SMTP服务器
+EMAIL_HOST = 'smtp.qq.com'
+# 邮件服务器端口
+# EMAIL_PORT 设置服务器端口信息，若使用SMTP服务器，则端口应为465或587
+EMAIL_PORT = 465
+# 发送邮件的账号
+# EMAIL_HOST_USER 发送邮件的账号，该账号必须开启POP3/SMTP服务
+EMAIL_HOST_USER = '185231027@qq.com'
+# SMTP服务密码
+# EMAIL_HOST_PASSWORD 用户端授权密码，即开启服务后所获得的授权码
+EMAIL_HOST_PASSWORD = 'sgqcmjansmdxcbcc'
+# DEFAULT_FROM_EMAIL 设置默认发送邮件的账号
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+```
+2. urls.py
+```python
+# 省略
+urlpatterns = [
+	# 省略
+	path('findPassword.html', views.findPassword, name='findPassword')
+]
+
+```
+3. 找回密码
+```python
+# views.py
+def findPassword(request):
+    button = '获取验证码'
+    new_password = False
+    if request.method == 'POST':
+        username = request.POST.get('username', 'root')
+        VerificationCode = request.POST.get('VerificationCode', '')
+        password = request.POST.get('password', '')
+        user = User.objects.filter(username=username)
+        # 用户不存在
+        if not user:
+            tips = '用户' + username + '不存在'
+        else:
+            # 判断验证码是否已发送
+            if not request.session.get('VerificationCode', ''):
+                # 发送验证码并将验证码写入session
+                button = '重置密码'
+                tips = '验证码已发送'
+                new_password = True
+                # 在python中的random.randint(a,b)用于生成一个指定范围内的整数。其中参数a是下限，参数b是上限
+                VerificationCode = str(random.randint(1000, 9999))
+                request.session['VerificationCode'] = VerificationCode
+                # email_user(subject,message,from_email=None)：
+                # 发送一封邮件给这个用户，依靠的当然是该用户的email属性。如果from_email不提供的话，Django会使用settings中的DEFAULT_FROM_EMAIL发送。
+                user[0].email_user('找回密码', VerificationCode)
+            # 匹配输入的验证码是否正确
+            elif VerificationCode == request.session.get('VerificationCode'):
+                # 密码加密处理并保存到数据库
+                dj_ps = make_password(password, None, 'pbkdf2_sha256')
+                user[0].password = dj_ps
+                user[0].save()
+                del request.session['VerificationCode']
+                tips = '密码已重置'
+            # 输入验证码错误
+            else:
+                tips = '验证码错误，请重新获取'
+                new_password = False
+                del request.session['VerificationCode']
+    return render(request, 'user.html', locals())
+
+```
+4. user页面
+```html
+<!-- user.html -->
+
+```
+* 使用send_mass_mail实现多封邮件同时发送
+* 使用EmailMultiAlternatives实现邮件发送
+
+## 扩展User模型
 
 ## git 远程分支上传
 ```
