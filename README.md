@@ -556,6 +556,144 @@ def reserve_table(request):
 <li><a href="{% url 'reservation:reserve_table' %}">Reserve A Table</a></li>
 ```
 
+## blog 博客页面
+1. 新建app
+`python manage.py startapp blog`
+2. settings.py添加blog
+```python
+# settings.py
+INSTALLED_APPS = [
+    # 省略
+    'blog'
+]
+```
+3. 新建模型
+```python
+# models.py
+from django.db import models
+from django.utils import timezone
+from django.contrib.auth.models import User
+# Create your models here.
+
+class Post(models.Model):
+  title = models.CharField(max_length=50)
+  content = models.TextField()
+  author = models.ForeignKey(User, on_delete=models.CASCADE)
+  #tags
+  category = models.ForeignKey('Category', null=True, on_delete=models.SET_NULL)
+  created = models.DateTimeField(default=timezone.now)
+
+class Category(models.Model):
+  category_name = models.CharField(max_length=50)
+
+```
+4. 更新数据库
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+5. 后台添加
+```python
+# admin.py
+from django.contrib import admin
+from .models import Category, Post
+# Register your models here.
+
+admin.site.register(Post)
+admin.site.register(Category)
+```
+6. 调整模型
+```python
+# models.py
+# 省略
+
+class Post(models.Model):
+  # 省略
+
+  class Meta:
+    verbose_name = 'post'
+    verbose_name_plural = 'posts'
+
+  # 当使用print输出对象的时候，只要自己定义了__str__(self)方法，那么就会打印从在这个方法中return的数据
+  def __str__(self):
+    return self.title
+
+class Category(models.Model):
+  # 省略
+
+  class Meta:
+    verbose_name = 'category'
+    verbose_name_plural = 'categories'
+
+  def __str__(self):
+    return self.category_name
+
+```
+7. 视图
+```python
+# views.py
+from django.shortcuts import render
+
+# Create your views here.
+
+def post_list(request):
+  pass
+
+def post_detail(request,id):
+  pass
+```
+8. 路由
+```python
+# blog >> urls.py
+from django.urls import path
+from . import views
+
+app_name = 'blog'
+
+urlpatterns = [
+    path('', views.post_list, name='post_list'),
+    path('<int:id>', views.post_detail, name='post_detail')
+]
+
+```
+9. 总路由添加
+```python
+# project >> urls.py
+urlpatterns = [
+    # 省略
+    path('blog/', include('blog.urls', namespace='blog')),
+    path('reserve_table/', include('reservation.urls', namespace='reservation')),
+]
+```
+10. 更新视图
+```python
+# views.py
+from django.shortcuts import render
+from .models import Post, Category
+# Create your views here.
+
+def post_list(request):
+  post_list = Post.objects.all()
+
+  context = {
+    'post_list': post_list
+  }
+
+  return render(request, 'Post/post_list.html', context)
+
+def post_detail(request,id):
+  post_detail = Post.objects.get(id=id)
+
+  context = {
+      'post_detail': post_detail
+  }
+
+  return render(request, 'Post/post_detail.html', context)
+
+```
+11. 新建页面模板
+> blog >> templates >> Post >> post_list.html 、post_detail.html
 
 ## Django常见错误总结: 细数我们一起走过的大坑
 [https://blog.csdn.net/weixin_42134789/article/details/82184481](https://blog.csdn.net/weixin_42134789/article/details/82184481)
