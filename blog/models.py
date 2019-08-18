@@ -38,5 +38,6 @@ class Comment(models.Model):
   created = models.DateTimeField(default=timezone.now)
 
   # def __str__(self):
+  #  return str(self.content)
   def __unicode__(self):
     return self.post

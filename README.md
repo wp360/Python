@@ -984,12 +984,71 @@ def post_detail(request,id):
         </div>
         <div class="comment-body">
           <h3>{{comment.user}}</h3>
-          <div class="meta">January 9, 2018 at 2:21pm</div>
+          <div class="meta">{{comment.content}}</div>
           <p>{{comment.content}}</p>
         </div>
       </li>
     {% endfor %}
   </ul>
+```
+## 表单
+1. 视图
+```python
+# views.py
+from .forms import CommentForm
+# 省略
+def post_detail(request,id):
+  # 省略
+  comment_form = CommentForm()
+
+  if request.method == 'POST':
+    comment_form = CommentForm(request.POST)
+    if comment_form.is_valid():
+      new_comment = comment_form.save(commit=False)
+      new_comment.user = request.user
+      new_comment.post = post_detail
+      new_comment.save()
+  else:
+    comment_form = CommentForm()
+
+  context = {
+      # 省略
+      'comment_form': comment_form
+  }
+
+```
+2. 页面
+```html
+<!-- post_detail.html -->
+<!-- 修改前 -->
+<form action="#" class="p-5 bg-light">
+  <div class="form-group">
+    <label for="name">Name *</label>
+    <input type="text" class="form-control" id="name">
+  </div>
+  <div class="form-group">
+    <label for="email">Email *</label>
+    <input type="email" class="form-control" id="email">
+  </div>
+  <div class="form-group">
+    <label for="website">Website</label>
+    <input type="url" class="form-control" id="website">
+  </div>
+
+  <div class="form-group">
+    <label for="message">Message</label>
+    <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
+  </div>
+  <div class="form-group">
+    <input type="submit" value="Post Comment" class="btn btn-primary">
+  </div>
+</form>
+<!-- 修改后 -->
+<form method="POST" class="p-5 bg-light">
+  {% csrf_token %}
+  {{comment_form}}
+  <button type="submit" class="btn btn-primary">评论</button>
+</form>
 ```
 
 ## 关于django views视图函数
