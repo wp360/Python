@@ -910,6 +910,88 @@ def post_detail(request,id):
 
 * 关于标签不能使用中文后续调整
 
+## 评论
+1. 模型
+```python
+# models.py
+class Comment(models.Model):
+  user = models.ForeignKey(User,on_delete=models.CASCADE)
+  post = models.ForeignKey(Post, on_delete=models.CASCADE)
+  content = models.TextField()
+  created = models.DateTimeField(default=timezone.now)
+
+  def __str__(self):
+    return self.post
+
+```
+2. 更新
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+3. 后台
+```python
+# admin
+from .models import Category, Post, Comment
+# 省略
+admin.site.register(Comment)
+
+```
+#### 注意：中文报错
+```
+使用def __str__(self):
+解决办法：def __unicode__(self):
+```
+4. 表单
+```python
+# forms.py
+from django import forms
+from .models import Comment
+
+class CommentForm(forms.ModelForm):
+  class Meta:
+    model = Comment
+    fields = [
+      'content'
+    ]
+
+```
+5. 视图
+```python
+# views.py
+from .models import Post, Category, Comment
+# 省略
+def post_detail(request,id):
+# 省略
+  comments = Comment.objects.filter(post=post_detail)
+
+  context = {
+    'post_detail': post_detail,
+    'categories': categories,
+    'all_tags': all_tags,
+    'comments': comments
+}
+```
+6. 页面
+```html
+<!-- post_detail.html -->
+  <ul class="comment-list">
+    {% for comment in comments %}
+      <li class="comment">
+        <div class="vcard bio">
+          <img src="img/person_1.jpg" alt="Image placeholder">
+        </div>
+        <div class="comment-body">
+          <h3>{{comment.user}}</h3>
+          <div class="meta">January 9, 2018 at 2:21pm</div>
+          <p>{{comment.content}}</p>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+```
+
 ## 关于django views视图函数
 * 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
 * 二. HttpResponse函数
