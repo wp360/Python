@@ -8,7 +8,7 @@
 `python manage.py migrate`
 * 创建admin用户
 `python manage.py createsuperuser`
-* 登录后台：http://localhost:8000/admin/，登录用户名、密码为刚才输入的
+* 登录后台：http://localhost:8000/admin/，登录用户名、密码为刚才输入的haidebaozi2
 4. 创建meals应用
 `python manage.py startapp meals`
 * [设置添加]
@@ -828,7 +828,87 @@ python manage.py runserver
 </div>
 ```
 [django-taggit参考文档 —— https://github.com/yangyubo/django-taggit](https://github.com/yangyubo/django-taggit)
+15. 过滤
+```python
+# views.py
+def post_by_tag(request, tag):
+  post_by_tag = Post.objects.filter(tags__name__in=[tag])
+  context = {
+    'post_list': post_by_tag
+  }
+  return render(request, 'Post/post_list.html', context)
 
+def post_by_category(request, category):
+  post_by_category = Post.objects.filter(category__category_name=category)
+  context = {
+      'post_list': post_by_category
+  }
+  return render(request, 'Post/post_list.html', context)
+
+
+# urls.py
+urlpatterns = [
+    path('', views.post_list, name='post_list'),
+    path('<int:id>', views.post_detail, name='post_detail'),
+    path('tags=<slug:tag>', views.post_by_tag, name='post_by_tag'),
+    path('category=<slug:category>', views.post_by_category, name='post_by_category')
+]
+
+```
+```html
+<!-- 省略 -->
+            <div class="tag-widget post-tag-container mb-5 mt-5">
+              <div class="tagcloud">
+                {% for tag in post_detail.tags.all %}
+                  <a href="{% url 'blog:post_by_tag' tag %}" class="tag-cloud-link">{{tag.name}}</a>
+                {% endfor %}
+              </div>
+            </div>
+<!-- 省略 -->
+              <div class="categories">
+                <h3>Categories</h3>
+                {% for category in categories %}
+                <li><a href="{% url 'blog:post_by_category' category %}">{{category}}</a></li>
+                {% endfor %}
+              </div>
+```
+16. 标签
+```python
+# views
+from taggit.models import Tag
+# 省略
+def post_detail(request,id):
+  post_detail = Post.objects.get(id=id)
+  categories = Category.objects.all()
+  all_tags = Tag.objects.all()
+
+  context = {
+      'post_detail': post_detail,
+      'categories': categories,
+      'all_tags': all_tags
+  }
+```
+```html
+<!-- 修改前 -->
+  <div class="tagcloud">
+    <a href="#" class="tag-cloud-link">Life</a>
+    <a href="#" class="tag-cloud-link">Sport</a>
+    <a href="#" class="tag-cloud-link">Tech</a>
+    <a href="#" class="tag-cloud-link">Travel</a>
+    <a href="#" class="tag-cloud-link">Life</a>
+    <a href="#" class="tag-cloud-link">Sport</a>
+    <a href="#" class="tag-cloud-link">Tech</a>
+    <a href="#" class="tag-cloud-link">Travel</a>
+  </div>
+<!-- 修改后 -->
+  <div class="tagcloud">
+    {% for tag in all_tags %}
+      <a href="{% url 'blog:post_by_tag' tag %}" class="tag-cloud-link">{{tag}}</a>
+    {% endfor %}
+  </div>
+```
+
+* 关于标签不能使用中文后续调整
 
 ## 关于django views视图函数
 * 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
