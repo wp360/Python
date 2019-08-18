@@ -694,6 +694,72 @@ def post_detail(request,id):
 ```
 11. 新建页面模板
 > blog >> templates >> Post >> post_list.html 、post_detail.html
+```html
+<!-- 头尾直接载入 -->
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+<!-- 中间部分保留 -->
+<div class="main-wrap">
+  <!-- 省略 -->
+</div>
+{% endblock body %}
+```
+12. 循环数据更新
+```html
+<!-- post_list.html -->
+<!-- 省略 -->
+        <div class="row mb-5">
+          {% for post in post_list %}
+            <div class="col-md-4">
+              <div class="media d-block media-bg-white mb-5" data-aos="fade-up" data-aos-delay="400">
+                <figure>
+                  <a href="blog-single.html"><img src="{{post.image.url}}" alt="Image placeholder" class="img-fluid"></a>
+                </figure>
+                <div class="media-body">
+                  <h3><a href="{% url 'blog:post_detail' post.id %}">{{post}}</a></h3>
+                  <p class="post-meta"><span><span class="fa fa-calendar"></span>{{post.created}}</span></p>
+                  <p class="mb-4">{{post.content}}</p>
+                  <p><a href="{% url 'blog:post_detail' post.id %}"
+                      class="btn btn-primary btn-outline-primary btn-sm">Read More</a></p>
+                </div>
+              </div> <!-- .media -->
+            </div>
+          {% endfor %}
+        </div>
+```
+```python
+# image.url 通过models.py添加
+class Post(models.Model):
+# 省略
+  image = models.ImageField(upload_to='blog/', blank=True, null=True)
+# 更新数据库
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+```html
+<!-- post_detail.html -->
+<!-- 省略 -->
+<div class="col-md-7 text-center" data-aos="fade-up">
+  <h2 class="heading mb-4">{{post_detail}}</h2>
+
+  <div class="post-info">
+    <div class="date-info">{{post_detail.created}}</div>
+    <div class="category-info">
+      <span class="seperator">|</span>In
+      <a href="#" data-title="View all posts in Lifestyle" title="View all posts in Lifestyle">{{post_detail.category}}</a>
+    </div>
+    <div class="author-info"><span class="seperator">|</span>By <a href="#">{{post_detail.author}}</a></div>
+  </div>
+
+</div>
+<div class="col-md-8">
+  <p>{{post_detail.content}}</p>
+  <!-- 省略 -->
+</div>
+```
+
 
 ## Django常见错误总结: 细数我们一起走过的大坑
 [https://blog.csdn.net/weixin_42134789/article/details/82184481](https://blog.csdn.net/weixin_42134789/article/details/82184481)
