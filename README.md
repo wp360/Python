@@ -759,6 +759,100 @@ python manage.py runserver
   <!-- 省略 -->
 </div>
 ```
+13. 页面调整
+> post_detail.html
+* 去掉多余评论
+* 去掉作者简介
+* 去掉多余段落
+```python
+# views.py
+  post_detail = Post.objects.get(id=id)
+  categories = Category.objects.all()
+
+  context = {
+      'post_detail': post_detail,
+      'categories': categories
+  }
+
+```
+14. 标签
+> django-taggit的使用
+```
+django-taggit 是一个简单易用的 Django 标签 app。把 "taggit" 加到在你项目中的 INSTALLED_APPS 中， 然后为你的 model 增加 TaggableManager 就完工了
+```
+* 安装
+`pip install django-taggit`
+* 设置
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+    # 省略
+    'taggit',
+    'meals',
+    'reservation',
+    'blog'
+]
+```
+* 添加
+```python
+# blog >> models.py
+from taggit.managers import TaggableManager
+
+class Post(models.Model):
+  # 省略
+  tags = TaggableManager(blank=True)
+```
+* 更新
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+* 循环
+```html
+<div class="tag-widget post-tag-container mb-5 mt-5">
+  <div class="tagcloud">
+    <a href="#" class="tag-cloud-link">Life</a>
+    <a href="#" class="tag-cloud-link">Sport</a>
+    <a href="#" class="tag-cloud-link">Tech</a>
+    <a href="#" class="tag-cloud-link">Travel</a>
+  </div>
+</div>
+<!-- 改成 -->
+<div class="tag-widget post-tag-container mb-5 mt-5">
+  <div class="tagcloud">
+    {% for tag in post_detail.tags.all %}
+      <a href="#" class="tag-cloud-link">{{tag.name}}</a>
+    {% endfor %}
+  </div>
+</div>
+```
+[django-taggit参考文档 —— https://github.com/yangyubo/django-taggit](https://github.com/yangyubo/django-taggit)
+
+
+## 关于django views视图函数
+* 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
+* 二. HttpResponse函数
+* 三．调用render函数返回一个网页
+```
+参数详解：
+
+request: 是一个固定参数, 就是指通过接受到的通过wsgi处理过的客户端浏览器请求数
+
+据。
+
+template_name:templates中定义的HTML文件, 要注意路径比如'templates\polls\index.html', 参数就要写'polls\index.html'
+
+context: 要传入上下文中用于渲染呈现的数据, 默认是一个字典格式，键即下文html模板中需要被替换的元素，键值即在views视图函数中需要传到html模板中变量需要替换成的值。
+
+content_type: 生成的文档要使用的MIME 类型。默认为DEFAULT_CONTENT_TYPE 设置的值。
+
+status: http的响应代码,默认是200.
+
+using: 用于加载模板使用的模板引擎的名称。
+```
+
+[django views视图函数](https://www.cnblogs.com/fengjunhua/p/7813317.html)
 
 
 ## Django常见错误总结: 细数我们一起走过的大坑
