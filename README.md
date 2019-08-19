@@ -845,7 +845,6 @@ def post_by_category(request, category):
   }
   return render(request, 'Post/post_list.html', context)
 
-
 # urls.py
 urlpatterns = [
     path('', views.post_list, name='post_list'),
@@ -1050,6 +1049,86 @@ def post_detail(request,id):
   <button type="submit" class="btn btn-primary">评论</button>
 </form>
 ```
+## 分页
+1. django-pagination的使用
+```python
+# views.py
+from django.core.paginator import Paginator
+# 省略
+def post_list(request):
+  post_list = Post.objects.all()
+  paginator = Paginator(post_list, 1)
+
+  page = request.GET.get('page')
+  post_list = paginator.get_page(page)
+```
+2. 页面调整
+```html
+<!-- post_list.html -->
+<!-- 修改前 -->
+<ul class="pagination custom-pagination">
+  <li class="page-item prev"><a class="page-link" href="#"><i class="fa fa-angle-left"></i></a></li>
+  <li class="page-item active"><a class="page-linkx href=" #">1</a></li>
+  <li class="page-item"><a class="page-link" href="#">2</a></li>
+  <li class="page-item"><a class="page-link" href="#">3</a></li>
+  <li class="page-item next"><a class="page-link" href="#"><i class="fa fa-angle-right"></i></a></li>
+</ul>
+<!-- 修改后 -->
+<!-- 直接根据文档修改 -->
+<div class="pagination">
+  <span class="step-links">
+    {% if post_list.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ post_list.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}.
+    </span>
+
+    {% if post_list.has_next %}
+    <a href="?page={{ post_list.next_page_number }}">next</a>
+    <a href="?page={{ post_list.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+<!-- 原有基础上修改 -->
+<div class="row">
+  {% if post_list.has_other_pages %}
+  <div class="col-md-12">
+    <ul class="pagination custom-pagination">
+      {% if post_list.has_previous %}
+      <li class="page-item prev">
+        <a class="page-link" href="?page={{post_list.previous_page_number}}">
+          <i class="fa fa-angle-left"></i>
+        </a>
+      </li>
+      {% else %}
+        <li class="disabled"></li>
+      {% endif %}
+
+      {% for pages in post_list.paginator.page_range %}
+        {% if post_list.number == pages %}
+          <li class="page-item active"><a class="page-linkx" href="#">{{pages}}</a></li>
+        {% else %}
+          <li class="page-item active"><a class="page-linkx" href="?page={{pages}}">{{pages}}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if post_list.has_next %}
+        <li class="page-item next">
+          <a class="page-link" href="?page={{post_list.next_page_number}}">
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
+      {% else %}
+        <li class="disabled"></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+```
+[参考文档：https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/](https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/)
 
 ## 关于django views视图函数
 * 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
