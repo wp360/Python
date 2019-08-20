@@ -693,6 +693,39 @@ def findPassword(request):
 * 使用EmailMultiAlternatives实现邮件发送
 
 ## 扩展User模型
+[自定义 Django的User Model，扩展 AbstractUser类注意事项](https://www.cnblogs.com/huchong/p/9804635.html)
+1. 在user的models.py文件中定义模型MyUser
+```python
+# models.py
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class MyUser(AbstractUser):
+    qq = models.CharField('QQ号码', max_length=16)
+    weChat = models.CharField('微信账号', max_length=100)
+    mobile = models.CharField('手机号码', max_length=11)
+    # 设置返回值
+    def __str__(self):
+        return self.username
+
+```
+2. 在项目的settings.py中配置相关信息
+```python
+# settings.py
+AUTH_USER_MODEL = 'user.MyUser'
+```
+3. 更新数据
+```
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+#### 注意：
+```
+migrate时可能报错，那就清空之前对应的表。但是数据会清空，谨慎操作。
+完成数据迁移后，打开数据库查看数据表信息，可以发现内置模型User的数据表auth_user改为数据表user_myuser，并且数据表user_myuser的字段除了具有内置模型User的字段之外，还额外增加了自定义的字段。
+如果清空了，使用python manage.py createsuperuser产生新后台管理账号
+```
 
 ## git 远程分支上传
 ```

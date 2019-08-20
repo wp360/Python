@@ -11,23 +11,24 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+# 项目路径
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
+# 秘钥配置
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '8at8(*vw3v$&rggqxlg+s%p#-jfhr!t$i5%n943ibp5!paa_p&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# 调试模式
 DEBUG = True
-
+# 域名访问权限
 ALLOWED_HOSTS = []
 
-
+# App列表
 # Application definition
 
 INSTALLED_APPS = [
@@ -146,3 +147,5 @@ STATIC_URL = '/static/'
 # 设置APP(index) 的静态资源文件夹index_static
 # os.path.join(BASE_DIR, 'index/index_static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+AUTH_USER_MODEL = 'user.MyUser'
