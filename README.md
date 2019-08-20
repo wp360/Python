@@ -1130,6 +1130,140 @@ def post_list(request):
 ```
 [参考文档：https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/](https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/)
 
+## 关于我们页面
+1. 新建
+`python manage.py startapp aboutus`
+2. 添加
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+    # 省略
+    'aboutus'
+]
+```
+3. 模型
+```python
+# aboutus >> models.py
+from django.db import models
+
+# Create your models here.
+# 简介部分
+class AboutUs(models.Model):
+  title = models.CharField(max_length=50)
+  content = models.TextField()
+  image = models.ImageField(upload_to='about_us/')
+
+  class Meta:
+    verbose_name = 'about us '
+    verbose_name_plural = 'about us '
+
+  def __str__(self):
+    return self.title
+
+# 我们的优势
+class Why_Choose_Us(models.Model):
+  title = models.CharField(max_length=50)
+  content = models.TextField()
+
+  class Meta:
+    verbose_name = 'why choose us '
+    verbose_name_plural = 'why choose us '
+
+  def __str__(self):
+    return self.title
+
+# 主厨介绍
+class Chef(models.Model):
+  name = models.CharField(max_length=50)
+  title = models.CharField(max_length=50)
+  # biography 个人经历
+  bio = models.TextField()
+  image = models.ImageField(upload_to='chef/')
+
+  class Meta:
+    verbose_name = 'chef'
+    verbose_name_plural = 'chef'
+
+  def __str__(self):
+    return self.name
+
+```
+4. 数据
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+5. 后台
+```python
+# aboutus >> admin.py
+from django.contrib import admin
+
+# Register your models here.
+from .models import AboutUs, Why_Choose_Us, Chef
+
+admin.site.register(AboutUs)
+admin.site.register(Why_Choose_Us)
+admin.site.register(Chef)
+
+```
+6. 内容
+> 在admin后台添加相关内容：简介、优势、主厨（标题、文字、图片等等）
+7. 模板
+* 新建templates文件夹 >> aboutus文件夹，添加about.html
+8. 视图
+```python
+# aboutus >> views.py
+from django.shortcuts import render
+from .models import AboutUs, Why_Choose_Us, Chef
+# Create your views here.
+
+def aboutus_list(request):
+  pass
+
+```
+9. 路由
+* 新建urls.py
+```python
+# aboutus >> urls.py
+from django.urls import path
+from . import views
+
+app_name = 'aboutus'
+
+urlpatterns = [
+    path('', views.aboutus_list, name='aboutus_list')
+]
+# project >> urls.py
+urlpatterns = [
+    # 省略
+    path('about-us/', include('aboutus.urls', namespace='aboutus')),
+    path('reserve_table/', include('reservation.urls', namespace='reservation')),
+]
+```
+10. 渲染
+```python
+# aboutus >> views.py
+# 省略
+def aboutus_list(request):
+  # objects.last() 返回最后一条数据
+  about = AboutUs.objects.last()
+  why_choose_us = Why_Choose_Us.objects.last()
+  chef = Chef.objects.last()
+
+  context = {
+      'about': about,
+      'why_choose_us': why_choose_us,
+      'chef': chef
+  }
+
+  return render(request, 'aboutus/about.html', context)
+
+```
+[django中常用的数据查询方法](https://blog.csdn.net/chen1042246612/article/details/84071006)
+11. 预览
+* 打开浏览器输入网址：http://localhost:8000/about-us/
+
+
 ## 关于django views视图函数
 * 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
 * 二. HttpResponse函数
