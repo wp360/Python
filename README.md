@@ -1247,8 +1247,11 @@ urlpatterns = [
 def aboutus_list(request):
   # objects.last() 返回最后一条数据
   about = AboutUs.objects.last()
-  why_choose_us = Why_Choose_Us.objects.last()
-  chef = Chef.objects.last()
+  # why_choose_us = Why_Choose_Us.objects.last()
+  # chef = Chef.objects.last()
+  why_choose_us = Why_Choose_Us.objects.all()
+  chef = Chef.objects.all()
+
 
   context = {
       'about': about,
@@ -1259,6 +1262,93 @@ def aboutus_list(request):
   return render(request, 'aboutus/about.html', context)
 
 ```
+11. 页面
+```html
+<!-- about.html -->
+  <div class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-7" data-aos="fade-up">
+          <img src="{{about.image.url}}" alt="Image placeholder" class="img-fluid">
+        </div>
+        <div class="col-md-5 pl-md-5" data-aos="fade-up" data-aos-delay="200">
+          <h2 class="mb-4">{{about.title}}</h2>
+          <p>{{about.content}}</p>
+        </div>
+      </div>
+    </div>
+  </div> <!-- .section -->
+
+<!-- 修改前 -->
+  <div class="accordion-item">
+    <h3 class="mb-0">
+      <a class="btn-block p-3" data-toggle="collapse" href="#collapseOne" role="button"
+        aria-expanded="true" aria-controls="collapseOne">Quality Cuisine <span class="icon"></span></a>
+    </h3>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="p-3">
+        <p></p>
+      </div>
+    </div>
+  </div> <!-- .accordion-item -->
+<!-- 修改后 -->
+  {% for info in why_choose_us %}
+    <div class="accordion-item">
+      <h3 class="mb-0">
+        <a class="btn-block p-3" data-toggle="collapse" href="#collapse{{info.id}}" role="button"
+          aria-expanded="true" aria-controls="collapse{{info.id}}">{{info.title}}<span class="icon"></span></a>
+      </h3>
+      <div id="collapse{{info.id}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div class="p-3">
+          <p>{{info.content}}</p>
+        </div>
+      </div>
+    </div> <!-- .accordion-item -->
+  {% endfor %}
+<!-- 修改前 -->
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+    <img src="img/person_1.jpg" alt="Image placeholder" class="img-fluid mb-4 rounded">
+    <h3 class="mb-3">James Smith</h3>
+    <p class="post-meta text-muted">Chef Cook</p>
+    <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum cumque velit labore
+      placeat corporis ad quisquam odio inventore beatae repudiandae ea quidem saepe doloribus libero, alias,
+      eveniet quam at aperiam.</p>
+  </div>
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+    <img src="img/person_2.jpg" alt="Image placeholder" class="img-fluid mb-4 rounded">
+    <h3 class="mb-3">Rob Woodstone</h3>
+    <p class="post-meta text-muted">Chef Cook</p>
+    <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum cumque velit labore
+      placeat corporis ad quisquam odio inventore beatae repudiandae ea quidem saepe doloribus libero, alias,
+      eveniet quam at aperiam.</p>
+  </div>
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+    <img src="img/person_3.jpg" alt="Image placeholder" class="img-fluid mb-4 rounded">
+    <h3 class="mb-3">Steph Gold</h3>
+    <p class="post-meta text-muted">Chef Cook</p>
+    <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum cumque velit labore
+      placeat corporis ad quisquam odio inventore beatae repudiandae ea quidem saepe doloribus libero, alias,
+      eveniet quam at aperiam.</p>
+  </div>
+  <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+    <img src="img/person_4.jpg" alt="Image placeholder" class="img-fluid mb-4 rounded">
+    <h3 class="mb-3">Jon White</h3>
+    <p class="post-meta text-muted">Chef Cook</p>
+    <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum cumque velit labore
+      placeat corporis ad quisquam odio inventore beatae repudiandae ea quidem saepe doloribus libero, alias,
+      eveniet quam at aperiam.</p>
+  </div>
+<!-- 修改后 -->
+  {% for one in chef %}
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+      <img src="{{one.image.url}}" alt="Image placeholder" class="img-fluid mb-4 rounded">
+      <h3 class="mb-3">{{one.name}}</h3>
+      <p class="post-meta text-muted">{{one.title}}</p>
+      <p class="mb-5">{{one.bio}}</p>
+    </div>
+  {% endfor %}
+```
+
 [django中常用的数据查询方法](https://blog.csdn.net/chen1042246612/article/details/84071006)
 11. 预览
 * 打开浏览器输入网址：http://localhost:8000/about-us/
