@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'index',
     'user',
-    'user_defined'
+    # 'user_defined'
 ]
 
 MIDDLEWARE = [
@@ -148,4 +148,19 @@ STATIC_URL = '/static/'
 # os.path.join(BASE_DIR, 'index/index_static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# 邮件配置信息
+EMAIL_USE_SSL = True
+# 邮件服务器，如果是 163 改成 smtp.163.com
+EMAIL_HOST = 'smtp.qq.com'
+# 邮件服务器端口
+EMAIL_PORT = 465
+# 发送邮件的账号
+# EMAIL_HOST_USER = '185231027@qq.com'
+EMAIL_HOST_USER = '646734192@qq.com'
+# SMTP服务密码
+# EMAIL_HOST_PASSWORD = 'sgqcmjansmdxcbcc'
+EMAIL_HOST_PASSWORD = 'irpraugaxexobfce'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# 配置MyUser模型的相关信息
 AUTH_USER_MODEL = 'user.MyUser'

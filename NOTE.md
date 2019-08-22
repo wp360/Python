@@ -89,3 +89,53 @@ exists()	  判断结果是否存在
 delete()	  删除记录 models.Book.objects.filter(price__lte=100).delete()
 update()	  修改记录 models.Book.objects.filter(title__startswith="py").update(price=120)
 ```
+## 标签
+* for
+{% for item in myList %}
+{{item}}
+{% endfor %}
+* if
+{% if name="Lily" %}
+{{name}}
+{% elif name="Lucy" %}
+{{name}}
+{% else %}
+{{name}}
+{% endif %}
+
+> 数据表一对一 OneToOneField
+> 数据表一对多 ForeignKey
+```
+choices_list = [(i+1, v['type_name']) for i,v in enumerate(Type.objects.values('type_name'))]
+# 可以获取下表，enumerate每次循环可以得到下表及元素
+l = [] 数据表
+for i, v in enumerate(l):
+    print(i, v)
+```
+
+> save_m2m() 方法用于保存ManyToMany的数据模型
+
+## 设置缓存
+```python
+# settings.py
+CACHES = {
+    # 默认缓存数据表
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+        # TIMEOUT设置缓存的生命周期，以秒为单位，若为None，则永不过期
+        'TIMEOUT': 60,
+        'OPTIONS': {
+            # MAX_ENTRIES代表最大缓存记录的数量
+            'MAX_ENTRIES': 1000,
+            # 当缓存到达最大数量之后，设置剔除缓存的数量
+            'CULL_FREQUENCY': 3
+        }
+    },
+    # 设置多个缓存数据表
+    'MyDjango': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'MyDjango_cache_table',
+    }
+}
+```

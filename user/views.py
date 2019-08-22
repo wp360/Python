@@ -138,7 +138,7 @@ def findPassword(request):
                 tips = '验证码错误，请重新获取'
                 new_password = False
                 del request.session['VerificationCode']
-    return render(request, 'user.html', locals())
+    return render(request, 'findPassword.html', locals())
 
 # 用户注销，退出登录
 def logoutView(request):
