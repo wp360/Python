@@ -219,6 +219,7 @@ def meal_detail(request, slug):
 ```
 ## 添加模板
 1. 搜索免费模板
+
 [https://colorlib.com/wp/templates/](https://colorlib.com/wp/templates/)
 
 2. Django项目配置/static/路径，调用css、img、js等静态文件
@@ -827,7 +828,9 @@ python manage.py runserver
   </div>
 </div>
 ```
+
 [django-taggit参考文档 —— https://github.com/yangyubo/django-taggit](https://github.com/yangyubo/django-taggit)
+
 15. 过滤
 ```python
 # views.py
@@ -1128,6 +1131,7 @@ def post_list(request):
   {% endif %}
 </div>
 ```
+
 [参考文档：https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/](https://docs.djangoproject.com/zh-hans/2.2/topics/pagination/)
 
 ## 关于我们页面
@@ -1262,7 +1266,13 @@ def aboutus_list(request):
   return render(request, 'aboutus/about.html', context)
 
 ```
-11. 页面
+
+[django中常用的数据查询方法](https://blog.csdn.net/chen1042246612/article/details/84071006)
+
+11. 预览
+* 打开浏览器输入网址：http://localhost:8000/about-us/
+
+12. 页面
 ```html
 <!-- about.html -->
   <div class="section">
@@ -1349,9 +1359,152 @@ def aboutus_list(request):
   {% endfor %}
 ```
 
-[django中常用的数据查询方法](https://blog.csdn.net/chen1042246612/article/details/84071006)
-11. 预览
-* 打开浏览器输入网址：http://localhost:8000/about-us/
+## 联系我们 （Contact）
+1. 新建
+`python manage.py startapp contact`
+2. 设置
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+    # 省略
+    'contact'
+]
+
+```
+3. 模板
+> contact >> templates >> contact >> contact.html
+4. 邮件
+
+[https://www.cnblogs.com/AmilyWilly/p/8469880.html](https://www.cnblogs.com/AmilyWilly/p/8469880.html)
+
+```python
+# project >> settings.py
+# 直接发送邮件到终端
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+```
+5. 表单
+
+[http://www.liujiangblog.com/course/django/152](http://www.liujiangblog.com/course/django/152)
+
+```python
+# forms.py
+from django import forms
+
+class ContactForm(forms.Form):
+  name = forms.CharField()
+  phone = forms.CharField()
+  from_email = forms.EmailField(required = True)
+  message = forms.CharField(widget=forms.Textarea, required=True)
+```
+8. 视图
+```python
+# views.py
+from django.shortcuts import render
+from django.core.mail import send_mail, BadHeaderError
+from django.http import HttpResponse, HttpResponseRedirect
+from .forms import ContactForm
+# Create your views here.
+
+def send_email(request):
+  if request.method == 'POST':
+    form = ContactForm(request.POST)
+    if form.is_valid():
+      pass
+  else:
+    form = ContactForm()
+
+  context = {
+    'form' : form
+  }
+
+  return render(request, 'contact/contact.html', context)
+
+def send_success(request):
+  pass
+```
+9. 路由
+```python
+# urls.py
+from django.urls import path
+from . import views
+
+app_name = 'contact'
+
+urlpatterns = [
+    path('', views.send_email, name='send_email'),
+    path('success/', views.send_success, name='send_success'),
+]
+
+```
+10. 页面
+```html
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+  <div class="main-wrap">
+    <!-- 省略 -->
+      <div class="col-md-10 p-5 form-wrap">
+        <form method="POST">
+          {% csrf_token %}
+          {{form}}
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">提交</button>
+          </div>
+        </form>
+      </div>
+  </div>
+{% endblock body %}
+```
+11. 总路由
+```python
+# project >> urls.py
+urlpatterns = [
+    # 省略
+    path('contact/', include('contact.urls', namespace='contact')),
+```
+12. 视图
+```python
+# views.py
+def send_email(request):
+  if request.method == 'POST':
+    # 省略
+    if form.is_valid():
+      subject = form.cleaned_data['subject']
+      # phone = form.cleaned_data['phone']
+      from_email = form.cleaned_data['from_email']
+      message = form.cleaned_data['message']
+
+      try:
+        send_mail(subject, message, from_email, ['admin@example.com'])
+      except BadHeaderError:
+        return HttpResponse('ivalid header')
+
+      return redirect('contact:send_success')
+```
+13. 邮件发送配置
+```python
+# project >> urls.py
+DEFAULT_FROM_EMAIL = 'testing@example.com'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+EMAIL_PORT = 1025
+```
+
+```
+SSL/TLS介绍
+什么是SSL, 什么是TLS呢？官话说SSL是安全套接层(secure sockets layer)，TLS是SSL的继任者，叫传输层安全(transport layer security)。说白点，就是在明文的上层和TCP层之间加上一层加密，这样就保证上层信息传输的安全。如HTTP协议是明文传输，加上SSL层之后，就有了雅称HTTPS。它存在的唯一目的就是保证上层通讯安全的一套机制。它的发展依次经历了下面几个时期，像手机软件升级一样，每次更新都添加或去除功能，比如引进新的加密算法，修改握手方式等。
+```
+14. 发送成功返回
+```python
+# views.py
+# 省略
+def send_success(request):
+  return HttpResponse('thanks you for you email ^-^ ')
+
+```
+15. 提交验证
 
 
 ## 关于django views视图函数

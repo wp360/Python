@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'meals',
     'reservation',
     'blog',
-    'aboutus'
+    'aboutus',
+    'contact'
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,19 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# 直接发送邮件到终端
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 邮件配置信息
+EMAIL_USE_SSL = True
+# 邮件服务器，如果是 163 改成 smtp.163.com
+EMAIL_HOST = 'smtp.qq.com'
+# 邮件服务器端口
+EMAIL_PORT = 465
+# 发送邮件的账号
+# EMAIL_HOST_USER = '185231027@qq.com'
+EMAIL_HOST_USER = '646734192@qq.com'
+# SMTP服务密码
+# EMAIL_HOST_PASSWORD = 'sgqcmjansmdxcbcc'
+EMAIL_HOST_PASSWORD = 'irpraugaxexobfce'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
