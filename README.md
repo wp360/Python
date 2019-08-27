@@ -1506,6 +1506,76 @@ def send_success(request):
 ```
 15. 提交验证
 
+## 搜索
+1. 视图
+```python
+# blog >> views.py
+# 省略
+from django.db.models import Q
+# Create your views here.
+
+def post_list(request):
+  post_list = Post.objects.all()
+
+  ## search
+  search_query = request.GET.get('q')
+  if search_query:
+    # __icontains    包含 忽略大小写 ilike '%aaa%'，但是对于sqlite来说，contains的作用效果等同于icontains。
+    post_list = post_list.filter(Q(title__icontains = search_query))
+
+```
+2. 页面
+```html
+<!-- blog >> post_detail.html -->
+<!-- method="GET" name="q" value="{{request.Get.q}}" -->
+<form action="{% url 'blog:post_list' %}" method="GET" class="search-form">
+  <div class="form-group">
+    <span class="icon fa fa-search"></span>
+    <input type="text" class="form-control" name="q" value="{{request.Get.q}}" placeholder="Type a keyword and hit enter">
+  </div>
+</form>
+```
+3. 筛选
+```python
+# blog >> views.py
+  post_list = post_list.filter(
+      Q(title__icontains=search_query) |
+      Q(content__icontains=search_query) |
+      Q(tags__name__icontains=search_query)
+  ).distinct()
+```
+
+## python django 数据库查询
+```
+__exact        精确等于 like 'aaa'
+__iexact    精确等于 忽略大小写 ilike 'aaa'
+__contains    包含 like '%aaa%'
+__icontains    包含 忽略大小写 ilike '%aaa%'，但是对于sqlite来说，contains的作用效果等同于icontains。
+__gt    大于
+__gte    大于等于
+__lt    小于
+__lte    小于等于
+__in     存在于一个list范围内
+__startswith   以...开头
+__istartswith   以...开头 忽略大小写
+__endswith     以...结尾
+__iendswith    以...结尾，忽略大小写
+__range    在...范围内
+__year       日期字段的年份
+__month    日期字段的月份
+__day        日期字段的日
+__isnull=True/False
+__isnull=True 与 __exact=None的区别
+```
+
+## request.POST.get('key') 、 request.GET.get('key', '')
+```
+request.POST是用来接受从前端表单中传过来的数据，比如用户登录过程中传递过来的username、passwrod等字段。返回类型是字典；
+
+在后台进行数据获取时，有两种方法（以username为例）：request.POST['username']与request.POST.get('username')，那么这两者有什么不同之处呢？
+
+如果传递过来的数值不为空，那么这两种方法都没有错误，可以得到相同的结果。但是如果传递过来的数值为空，那么request.POST['username']则会提示Keyerror错误，而request.POST.get('username')则不会报错，而是返回一个None。
+```
 
 ## 关于django views视图函数
 * 一. 创建views.py文件，在工程文件夹根目录创建views.py视图文件，其实任意文件名都可以，使用views是为了遵循传统。
