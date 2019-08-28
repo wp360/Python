@@ -1545,6 +1545,157 @@ def post_list(request):
   ).distinct()
 ```
 
+## 首页
+1. 新建应用
+`python manage.py startapp home`
+2. 新建模板
+> home >> templates >> home >> index.html
+3. 添加应用
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+    # 省略
+    'home'
+]
+```
+4. 设置路由
+```python
+# home >> urls.py
+from django.urls import path
+from . import views
+
+app_name = 'home'
+
+urlpatterns = [
+    path('', views.home, name='home'),
+]
+
+```
+5. 添加视图
+```python
+# home >> views.py
+
+```
+6. 总路由
+```python
+# project >> urls.py
+urlpatterns = [
+    # 省略
+    path('', include('home.urls', namespace='home')),
+]
+```
+7. 页面
+```html
+<!-- home >> index.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block body %}
+  <div class="main-wrap">
+    <!-- 省略 -->
+  </div>
+{% endblock body %}
+```
+8. 后台数据添加
+9. 视图调整
+```python
+# home >> views.py
+from django.shortcuts import render
+from meals.models import Meals
+# Create your views here.
+
+def home(request):
+
+  context = {
+    'meals': meals
+  }
+
+  return render(request, 'home/index.html', context)
+
+```
+10. 页面循环遍历
+```html
+<!-- home >> templates >> home >> index.html -->
+<div class="menus d-flex bg-light">
+  {% for meal in meals %}
+    <div class="d-flex item">
+      <div class="image" style="background-image: url({{meal.image.url}});" data-aos="fade"></div>
+      <div class="text">
+        <h3>{{meal.name}}</h3>
+        <p>{{meal.description}}</p>
+        <p class="price">${{meal.price}}</p>
+      </div>
+    </div> <!-- .item -->
+  {% endfor %}
+</div>
+```
+11. 调整视图
+```python
+# home >> views.py
+from django.shortcuts import render
+from meals.models import Meals, Category
+# Create your views here.
+
+def home(request):
+  meals = Meals.objects.all();
+  meal_list = Meals.objects.all();
+  categories = Category.objects.all();
+
+  context = {
+    'meals': meals,
+    'meal_list': meal_list,
+    'categories': categories
+  }
+
+  return render(request, 'home/index.html', context)
+
+```
+12. 更新页面
+```html
+<!-- 切换 -->
+  <div class="section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8" data-aos="fade-up">
+
+          <h2 class="mb-5 text-center">Menu List with Price</h2>
+
+          <ul class="nav site-tab-nav" id="pills-tab" role="tablist">
+            {% for category in categories %}
+            <li class="nav-item">
+              <a class="nav-link " id="{{category}}-tab" data-toggle="pill" href="#{{category}}" role="tab"
+                aria-controls="{{category}}" aria-selected="true">{{category}}</a>
+            </li>
+            {% endfor %}
+          </ul>
+
+          <div class="tab-content" id="pills-tabContent">
+            {% for category in categories %}
+            <div class="tab-pane fade show" id="{{category}}" role="tabpanel" aria-labelledby="{{category}}-tab">
+              {% for meal in meal_list %}
+              {% if meal.category == category %}
+              <div class="d-block d-md-flex menu-food-item">
+                <div class="text order-1 mb-3">
+                  <h3><a href="{% url 'meals:meal_detail' meal.slug %}">{{meal.name}}</a></h3>
+                  <p>{{meal.description}}</p>
+                </div>
+                <div class="price order-2">
+                  <strong>${{meal.price}}</strong>
+                </div>
+              </div> <!-- .menu-food-item -->
+              {% endif %}
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+```
+
+
 ## python django 数据库查询
 ```
 __exact        精确等于 like 'aaa'
