@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 {% block body %}
   <div class="main-wrap">
     <div class="cover_1 cover_sm">
@@ -63,8 +64,10 @@
                 <h3 class="mb-5">留言</h3>
                 <form method="POST" class="p-5 bg-light">
                   {% csrf_token %}
-                  {{comment_form}}
-                  <button type="submit" class="btn btn-primary">评论</button>
+                  {% bootstrap_form comment_form %}
+                  {% buttons %}
+                    <button type="submit" class="btn btn-primary">评论</button>
+                  {% endbuttons %}
                 </form>
               </div>
             </div>

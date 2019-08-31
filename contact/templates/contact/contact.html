@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load bootstrap4 %}
 {% block body %}
   <div class="main-wrap">
     <div class="cover_1 cover_sm">
@@ -31,10 +32,10 @@
           <div class="col-md-10 p-5 form-wrap">
             <form method="POST">
               {% csrf_token %}
-              {{form}}
-              <div class="col-md-4">
+              {% bootstrap_form form %}
+              {% buttons %}
                 <button type="submit" class="btn btn-primary">提交</button>
-              </div>
+              {% endbuttons %}
             </form>
           </div>
         </div>

@@ -1778,6 +1778,134 @@ def home(request):
 <!-- 直接复制 -->
 ```
 
+## 页面优化
+1. 文字限定
+```html
+<!-- home >> index.html -->
+<p>{{meal.description|truncatewords:20}}</p>
+<!-- 只对英文单词有效 -->
+```
+2. 导航调整
+```html
+<!-- base.html -->
+<!-- 修改前 -->
+<nav class="site-menu">
+  <div class="site-menu-inner">
+    <ul class="list-unstyled">
+      <li class="active"><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="menu.html">Our Menu</a></li>
+      <li><a href="blog.html">Our Blog</a></li>
+      <li><a href="{% url 'reservation:reserve_table' %}">Reserve A Table</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+<!-- 修改后 -->
+<nav class="site-menu">
+  <div class="site-menu-inner">
+    <ul class="list-unstyled">
+      <li class="active"><a href="/">Home</a></li>
+      <li><a href="{% url 'aboutus:aboutus_list' %}">About Us</a></li>
+      <li><a href="{% url 'blog:post_list' %}">Our Blog</a></li>
+      <li><a href="{% url 'reservation:reserve_table' %}">Reserve A Table</a></li>
+      <li><a href="{% url 'contact:send_email' %}">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+```
+3. bootstrap4
+
+[参考文档：https://github.com/zostera/django-bootstrap4](https://github.com/zostera/django-bootstrap4)
+
+* 安装
+`pip install django-bootstrap4`
+* 设置
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+    # 省略
+    'bootstrap4',
+    'meals',
+```
+* 替换
+```html
+<!-- blog >> templates >> Post >> post_detail.html -->
+<!-- 修改前 -->
+{{comment_form}}
+<button type="submit" class="btn btn-primary">评论</button>
+
+<!-- 修改后 -->
+{% bootstrap_form comment_form %}
+{% buttons %}
+    <button type="submit" class="btn btn-primary">评论</button>
+{% endbuttons %}
+
+<!-- contact.html -->
+<!-- 修改前 -->
+{{form}}
+<div class="col-md-4">
+  <button type="submit" class="btn btn-primary">提交</button>
+</div>
+<!-- 修改后 -->
+{% bootstrap_form form %}
+{% buttons %}
+    <button type="submit" class="btn btn-primary">提交</button>
+{% endbuttons %}
+```
+4. django-summernote 富文本编辑器的使用
+
+[参考文档：https://github.com/summernote/django-summernote](https://github.com/summernote/django-summernote)
+
+* 安装
+`pip install django-summernote`
+* 设置
+```python
+# project >> settings.py
+INSTALLED_APPS = [
+  # 省略
+  'bootstrap4',
+  'django-summernote',
+```
+* 路由
+```python
+# project >> urls.py
+urlpatterns = [
+    path('summernote/', include('django_summernote.urls')),
+    path('admin/', admin.site.urls),
+```
+* 数据
+`python manage.py migrate`
+* 后台
+```python
+# meals >> admin.py
+# Register your models here.
+from django_summernote.admin import SummernoteModelAdmin
+from .models import Meals, Category
+
+# Apply summernote to all TextField in model.
+class MealsAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
+  summernote_fields = '__all__'
+
+admin.site.register(Meals, MealsAdmin)
+admin.site.register(Category)
+
+# 同样，修改blog >> admin.py
+from django.contrib import admin
+from django_summernote.admin import SummernoteModelAdmin
+from .models import Category, Post, Comment
+# Register your models here.
+
+# Apply summernote to all TextField in model.
+class PostAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
+  summernote_fields = '__all__'
+
+admin.site.register(Post, PostAdmin)
+admin.site.register(Category)
+admin.site.register(Comment)
+
+```
+
 ## python django 数据库查询
 ```
 __exact        精确等于 like 'aaa'
