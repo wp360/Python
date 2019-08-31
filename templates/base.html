@@ -32,11 +32,12 @@
       <nav class="site-menu">
         <div class="site-menu-inner">
           <ul class="list-unstyled">
-            <li class="active"><a href="/">Home</a></li>
-            <li><a href="{% url 'aboutus:aboutus_list' %}">About Us</a></li>
-            <li><a href="{% url 'blog:post_list' %}">Our Blog</a></li>
-            <li><a href="{% url 'reservation:reserve_table' %}">Reserve A Table</a></li>
-            <li><a href="{% url 'contact:send_email' %}">Contact</a></li>
+            <li class="active"><a href="/">首页</a></li>
+            <li><a href="{% url 'meals:meal_list' %}">菜单</a></li>
+            <li><a href="{% url 'aboutus:aboutus_list' %}">关于我们</a></li>
+            <li><a href="{% url 'blog:post_list' %}">博客</a></li>
+            <li><a href="{% url 'reservation:reserve_table' %}">预定餐位</a></li>
+            <li><a href="{% url 'contact:send_email' %}">联系我们</a></li>
           </ul>
         </div>
       </nav>
