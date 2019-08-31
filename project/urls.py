@@ -31,3 +31,8 @@ urlpatterns = [
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 后台管理标题设置
+admin.site.site_header = "餐馆后台管理系统"
+admin.site.site_title = "餐馆管理后台"
+admin.site.site_index_title = "欢迎使用餐馆后台管理系统"

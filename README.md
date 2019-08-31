@@ -1906,6 +1906,41 @@ admin.site.register(Comment)
 
 ```
 
+## 后台设置
+1. 整体设置
+```python
+# project >> urls.py
+# 后台管理标题设置
+# admin.site.site_header = "Resturant AdminPanel"
+# admin.site.site_title = "Resturant App Admin"
+# admin.site.site_index_title = "Welcome To Resturant Admin Panel"
+admin.site.site_header = "餐馆后台管理系统"
+admin.site.site_title = "餐馆管理后台"
+admin.site.site_index_title = "欢迎使用餐馆后台管理系统"
+```
+2. 博客后台
+```python
+# blog >> admin.py
+# 省略
+class PostAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
+  summernote_fields = '__all__'
+  list_display = ['title','author','category','created']
+  search_fields = ['title','content']
+  list_filter = ['category','tags']
+
+```
+3. 菜单后台
+```python
+# meals >> admin.py
+# 省略
+class MealsAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
+  summernote_fields = '__all__'
+  list_display = ['name', 'preperation_time', 'people', 'price']
+  search_fields = ['name', 'description']
+  list_filter = ['category', 'people']
+
+```
+
 ## python django 数据库查询
 ```
 __exact        精确等于 like 'aaa'

@@ -6,6 +6,9 @@ from .models import Category, Post, Comment
 # Apply summernote to all TextField in model.
 class PostAdmin(SummernoteModelAdmin):  # instead of ModelAdmin
   summernote_fields = '__all__'
+  list_display = ['title','author','category','created']
+  search_fields = ['title','content']
+  list_filter = ['category','tags']
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Category)
