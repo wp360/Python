@@ -1695,6 +1695,88 @@ def home(request):
 
 ```
 
+13. 视图更新
+```python
+# home >> views.py
+# 省略
+from blog.models import Post
+
+# Create your views here.
+
+def home(request):
+  # 省略
+  posts = Post.objects.all()
+  latest_post = Post.objects.last()
+
+
+  context = {
+    # 省略
+    'posts': posts,
+    'latest_post': latest_post,
+  }
+
+  return render(request, 'home/index.html', context)
+
+```
+14. 页面添加blog部分
+```html
+<div class="row">
+  <div class="col-lg-6">
+    {% for post in posts %}
+      <div class="media d-block d-lg-flex mb-5"  data-aos="fade-up" data-aos-delay="100">
+        <figure class="mr-4 horizontal">
+          <img src="{{post.image.url}}" alt="Image placeholder" class="img-fluid">
+        </figure>
+        <div class="media-body">
+          <h3><a href="#">{{post.title}}</a></h3>
+          <p class="post-meta"><span><span class="fa fa-calendar"></span>{{post.created}}</span></p>
+          <p>{{post.content}}</p>
+          <p><a href="#" class="btn btn-primary btn-outline-primary btn-sm">Read More</a></p>
+        </div>
+      </div> <!-- .media -->
+    {% endfor %}
+  </div> <!-- .col-md-6 -->
+
+  <div class="col-lg-6">
+    <div class="media d-block mb-5" data-aos="fade-up"  data-aos-delay="400">
+      <figure>
+        <a href="#"><img src="{{latest_post.image.url}}" alt="Image placeholder" class="img-fluid"></a>
+      </figure>
+      <div class="media-body">
+        <h3><a href="#">{{latest_post.title}}</a></h3>
+        <p class="post-meta"><span><span class="fa fa-calendar"></span>{{latest_post.created}}</span></p>
+        <p>{{latest_post.content}}</p>
+        <p><a href="#" class="btn btn-primary btn-outline-primary btn-sm">Read More</a></p>
+      </div>
+    </div> <!-- .media -->
+  </div>
+</div>
+```
+
+15. 视图添加
+```python
+# home >> views.py
+# 省略
+from aboutus.models import Why_Choose_Us
+# Create your views here.
+
+def home(request):
+  # 省略
+  why_choose_us = Why_Choose_Us.objects.all()
+
+  context = {
+    # 省略
+    'why_choose_us': why_choose_us
+  }
+
+  return render(request, 'home/index.html', context)
+
+```
+16. 页面（选择我们部分）更新
+```html
+<!-- 选择我们的理由 -->
+<!-- 直接复制 -->
+```
 
 ## python django 数据库查询
 ```
