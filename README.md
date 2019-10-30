@@ -44,6 +44,7 @@ AUTH_USER_MODEL = 'users.UserProfile'
 [Django的AbstractUser：https://blog.csdn.net/lht_521/article/details/80592543](https://blog.csdn.net/lht_521/article/details/80592543)
 
 5. 在users的models.py文件中新建书籍信息表book
+> verbose_name指定在admin管理界面中显示中文；verbose_name表示单数形式的显示，verbose_name_plural表示复数形式的显示；中文的单数和复数一般不作区别。
 ```python
 from datetime import datetime
 from django.db import models
@@ -183,7 +184,7 @@ git status
 
 git add .
 
-git commit -m "add file"
+git commit -m "项目初始化"
 
 git push
 
