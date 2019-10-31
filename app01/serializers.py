@@ -16,3 +16,9 @@ class Type4ModelSerializer(serializers.ModelSerializer):
     class Meta:
         model=Type4
         fields="__all__"
+# 类别总表
+from .models import Type
+class TypeModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Type
+        fields="__all__"

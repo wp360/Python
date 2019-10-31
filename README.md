@@ -118,6 +118,131 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 ```
 
+## 四表合一
+* 新建Type类
+* 数据导入
+* 序列化
+```python
+# serializers.py
+from .models import Type
+class TypeModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Type
+        fields="__all__"
+
+```
+* 创建视图类
+```python
+# views.py
+from .models import Type
+#导入序列化类
+from .serializers import TypeModelSerializer
+class TypeView(APIView):
+    """
+    操作类别表
+    """
+    renderer_classes = [JSONRenderer]
+    def get(self,request,format=None):
+        types=Type.objects.all()
+        types_serializer = TypeModelSerializer(types, many=True)
+        return Response(types_serializer.data)
+        def post(self,request):
+        name=request.data.get('name')
+        category_type=request.data.get('lei')
+        parent_category_id=request.data.get('parent')
+        type=Type()
+        type.name=name
+        type.category_type=category_type
+        if parent_category_id:
+            parent_category=Type.objects.filter(id=parent_category_id).first()
+            type.parent_category=parent_category
+        type.save()
+        type_serializer=TypeModelSerializer(type)
+        return Response(type_serializer.data)
+
+```
+* 路由
+```python
+# urls.py
+from app01.views import TypeView
+urlpatterns = [
+    #......
+    path('api/type/',TypeView.as_view())
+]
+
+```
+* 使用POSTMAN添加数据
+```
+输入连接： http://127.0.0.1:8000/api/type/
+采用POST方法
+form-data添加参数
+```
+* 修改前端调用api的js部分
+```js
+<script>
+import Axios from 'axios';
+export default {
+  name: 'app',
+  data () {
+    return {
+      type:[],
+      one:[],
+      two:[],
+      flag:false,
+      three1:[],
+      four1:[]
+    }
+  },
+  methods: {
+    getData(){
+      const api='http://127.0.0.1:8000/api/type/';
+      var _this=this
+      
+      Axios.get(api)
+      .then(function (response) {
+        _this.type=response.data;
+        for(var i=0;i<_this.type.length;i++){
+          if(_this.type[i].category_type===1){
+            _this.one.push(_this.type[i])
+          } 
+        }
+        for(var j=0;j<_this.type.length;j++){
+          if(_this.type[j].category_type===2){
+            _this.two.push(_this.type[j])
+          } 
+        }
+      })
+      .catch(function (error) {
+      console.log(error);
+      });
+      
+    },
+    open(index){
+      this.three1=[]
+      this.four1=[]
+      var parent=this.two[index].id
+      for(var i=0;i<this.type.length;i++){
+        if(this.type[i].parent_category===parent){
+          this.three1.push(this.type[i].name)
+        }
+        if(this.type[i].category_type===4){
+          this.four1.push(this.type[i].name)
+        }
+      }
+      this.flag=true
+    },
+    close(){
+      this.flag=false
+    }
+  },
+  mounted() {
+    this.getData()
+  }
+}
+</script>
+
+```
+
 * 后台登录：admin、admin123
 
 ## Django-guardian实现对象级别的权限控制
