@@ -99,6 +99,24 @@ admin.site.register(Type4)
 9. 启动项目
 `python manage.py runserver`
 10. 添加数据
+11. 解决跨域问题
+* 安装插件
+`pip install Django-cors-headers`
+* settings配置
+```python
+INSTALLED_APPS = [
+    # 省略
+    'corsheaders'
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    # 省略
+]
+
+# 解决跨域
+CORS_ORIGIN_ALLOW_ALL = True
+```
 
 * 后台登录：admin、admin123
 
