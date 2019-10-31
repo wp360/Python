@@ -10,6 +10,7 @@ class YunPian(object):
             'mobile': mobile,
             'text': '【**网】您的验证码是{code}。如非本人操作，请忽略本短信'.format(code=code)
         }
+        # format 格式化函数
         # text必须要跟云片后台的模板内容 保持一致，不然发送不出去！
         r = requests.post(self.single_send_url, data=parmas)
         print(r)
