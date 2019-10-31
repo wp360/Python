@@ -32,6 +32,8 @@ export default {
   name: 'app',
   data () {
     return {
+      // 添加type
+      type:[],
       one:[],
       two:[],
       three:[],
@@ -42,88 +44,124 @@ export default {
     }
   },
   methods: {
+    // getData(){
+    //   const api='http://127.0.0.1:8000/';
+    //   var api1=api+'api/type1/';
+    //   var api2=api+'api/type2/';
+    //   var api3=api+'api/type3/';
+    //   var api4=api+'api/type4/';
+    //   var type1=[];
+    //   var type2=[];
+    //   var type3=[];
+    //   var type4=[];
+    //   Axios.get(api1)
+    //   .then(function (response) {
+    //   // console.log(response);
+    //   for(var i=0;i<response.data.length;i++){
+    //     // console.log(response.data[i])
+    //     type1.push(response.data[i])
+    //   }
+    //   // console.log(type1)
+    //   })
+    //   .catch(function (error) {
+    //   console.log(error);
+    //   });
+    //   this.one=type1;
+    //   Axios.get(api2)
+    //   .then(function (response) {
+    //   // console.log(response);
+    //   for(var i=0;i<response.data.length;i++){
+    //     // console.log(response.data[i])
+    //     type2.push(response.data[i])
+    //   }
+    //   // console.log(type2)
+    //   })
+    //   .catch(function (error) {
+    //   console.log(error);
+    //   });
+    //   this.two=type2;
+    //   Axios.get(api3)
+    //   .then(function (response) {
+    //   // console.log(response);
+    //   for(var i=0;i<response.data.length;i++){
+    //     // console.log(response.data[i])
+    //     type3.push(response.data[i])
+    //   }
+    //   // console.log(type3)
+    //   })
+    //   .catch(function (error) {
+    //   console.log(error);
+    //   });
+    //   this.three=type3;
+    //   Axios.get(api4)
+    //   .then(function (response) {
+    //   // console.log(response);
+    //   for(var i=0;i<response.data.length;i++){
+    //     // console.log(response.data[i])
+    //     type4.push(response.data[i])
+    //   }
+    //   // console.log(type4)
+    //   })
+    //   .catch(function (error) {
+    //   console.log(error);
+    //   });
+    //   this.four=type4;
+    //   // console.log(this.one)
+    //   // console.log(this.two)
+    //   // console.log(this.three)
+    //   // console.log(this.four)
+    // },
     getData(){
-      const api='http://127.0.0.1:8000/';
-      var api1=api+'api/type1/';
-      var api2=api+'api/type2/';
-      var api3=api+'api/type3/';
-      var api4=api+'api/type4/';
-      var type1=[];
-      var type2=[];
-      var type3=[];
-      var type4=[];
-      Axios.get(api1)
+      const api='http://127.0.0.1:8000/api/type/';
+      var _this=this
+      
+      Axios.get(api)
       .then(function (response) {
-      // console.log(response);
-      for(var i=0;i<response.data.length;i++){
-        // console.log(response.data[i])
-        type1.push(response.data[i])
-      }
-      // console.log(type1)
+        _this.type=response.data;
+        for(var i=0;i<_this.type.length;i++){
+          if(_this.type[i].category_type===1){
+            _this.one.push(_this.type[i])
+          } 
+        }
+        for(var j=0;j<_this.type.length;j++){
+          if(_this.type[j].category_type===2){
+            _this.two.push(_this.type[j])
+          } 
+        }
       })
       .catch(function (error) {
       console.log(error);
       });
-      this.one=type1;
-      Axios.get(api2)
-      .then(function (response) {
-      // console.log(response);
-      for(var i=0;i<response.data.length;i++){
-        // console.log(response.data[i])
-        type2.push(response.data[i])
-      }
-      // console.log(type2)
-      })
-      .catch(function (error) {
-      console.log(error);
-      });
-      this.two=type2;
-      Axios.get(api3)
-      .then(function (response) {
-      // console.log(response);
-      for(var i=0;i<response.data.length;i++){
-        // console.log(response.data[i])
-        type3.push(response.data[i])
-      }
-      // console.log(type3)
-      })
-      .catch(function (error) {
-      console.log(error);
-      });
-      this.three=type3;
-      Axios.get(api4)
-      .then(function (response) {
-      // console.log(response);
-      for(var i=0;i<response.data.length;i++){
-        // console.log(response.data[i])
-        type4.push(response.data[i])
-      }
-      // console.log(type4)
-      })
-      .catch(function (error) {
-      console.log(error);
-      });
-      this.four=type4;
-      // console.log(this.one)
-      // console.log(this.two)
-      // console.log(this.three)
-      // console.log(this.four)
-},
+    },
+    // open(index){
+    //   // console.log(this.two[index].id)
+    //   var temp=[]
+    //   for(var i=0;i<this.three.length;i++){
+    //     if(this.three[i].parent===index){
+    //       temp.push(this.three[i].name)
+    //     }
+    //   }
+    //   console.log(temp)
+    //   this.three1=temp;
+    //   var temp4=[]
+    //   for(var j=0;j<this.four.length;j++){
+    //     temp4.push(this.four[j].name)
+    //   }
+    //   this.four1=temp4
+    //   this.flag=true
+    // },
     open(index){
-      // console.log(this.two[index].id)
-      var temp=[]
-      for(var i=0;i<this.three.length;i++){
-        if(this.three[i].parent===index){
-          temp.push(this.three[i].name)
+      this.three1=[]
+      this.four1=[]
+      var parent=this.two[index].id
+      for(var i=0;i<this.type.length;i++){
+        if(this.type[i].parent_category===parent){
+          this.three1.push(this.type[i].name)
+        }
+        if(this.type[i].category_type===4){
+          this.four1.push(this.type[i].name)
         }
       }
-      console.log(temp)
-      this.three1=temp;
-      var temp4=[]
-      for(var j=0;j<this.four.length;j++){
-        temp4.push(this.four[j].name)
-      }
-      this.four1=temp4
       this.flag=true
     },
     close(){
